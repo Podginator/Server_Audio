@@ -116,6 +116,7 @@
     <ClInclude Include="AudioServerHandler.h" />
     <ClInclude Include="AudioSocketManagerFactory.h" />
     <ClInclude Include="ClosingServerHandler.h" />
+    <ClInclude Include="FilePackager.h" />
     <ClInclude Include="SocketManagerFactory.h" />
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="ConcurrentQueue.h" />
@@ -126,6 +127,7 @@
     <ClInclude Include="ServerSocket.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="stdadfx.h" />
+    <ClInclude Include="WavFilePackager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioServerHandler.cpp" />
@@ -136,6 +138,7 @@
     <ClCompile Include="ServerManager.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
     <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="WavFilePackager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

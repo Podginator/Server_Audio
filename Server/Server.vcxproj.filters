@@ -72,6 +72,12 @@
     <ClInclude Include="AudioSocketManagerFactory.h">
       <Filter>Header Files\Server</Filter>
     </ClInclude>
+    <ClInclude Include="WavFilePackager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FilePackager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

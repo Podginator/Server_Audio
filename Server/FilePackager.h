@@ -19,6 +19,9 @@ public:
   // Is the file fully packed. 
   virtual bool isFileComplete() = 0;
 
+  // Get the total size of the file.
+  virtual size_t getTotalSize() = 0;
+
   // Close the currently opened file. IS called on open, too.
   virtual bool closeFile() = 0;
 

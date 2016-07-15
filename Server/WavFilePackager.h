@@ -53,6 +53,12 @@ public:
   //  Successfully opened a file.
   virtual bool openFile(FILE* file);
 
+  //Name: getTotalSize
+  //  get the size of the file.
+  //Return : size_t
+  //  Get the total size.
+  virtual size_t getTotalSize();
+
   //Name : Close file
   //  Close the file
   //Return:

@@ -27,6 +27,14 @@ bool WavFilePackager::isFileComplete() {
   return mExtracted >= mTotalSize;
 }
 
+//Name: getTotalSize
+//  get the size of the file.
+//Return : size_t
+//  Get the total size.
+size_t WavFilePackager::getTotalSize() {
+  return mTotalSize;
+}
+
 //Name: Open File
 //  Open a file
 //Param: String : filePath

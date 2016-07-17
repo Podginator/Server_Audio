@@ -33,8 +33,9 @@ Socket::~Socket() {
 int Socket::read(char*& data) {
 	bool ok = true;
 	int totalBytes = 0;
-	char buffer[128] = {0};
-	int byteRead = recv(socketFileDesc, buffer, 128, 0);
+  //Read a buffer. 
+  char* buffer = new char[2048];
+	int byteRead = recv(socketFileDesc, buffer, 2048, 0);
 
 	if (byteRead <= 0) {
 		ok = false;
@@ -42,8 +43,12 @@ int Socket::read(char*& data) {
 	}
 
 	if (ok) {
-		data = buffer;
     totalBytes = byteRead;
+    data = new char[totalBytes + 1];
+    memcpy(data, buffer, totalBytes);
+    data[totalBytes] = '\0';
+
+    delete buffer;
 	}
 
 	return totalBytes;

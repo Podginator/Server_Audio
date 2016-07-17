@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ClientManager.h"
-
+#include "PacketExtracter.h"
 
 //
 // <Method>
@@ -102,8 +102,8 @@ void ClientManager::sendTask() {
     auto item = mSendQueue->pop();
 
     //Send the response to the server.
-    if (item.response != nullptr) {
-      mSocket->send((item.response));
+    if (item.packetData != nullptr) {
+      mSocket->send((const char*)item.packetData);
     }
 
     drainLock.unlock();
@@ -120,13 +120,13 @@ void ClientManager::sendTask() {
 void ClientManager::recvTask() {
   while (true) {
     char* msg = nullptr;
-    if (mSocket->read(msg) > 0) {
-      for each (auto handler in mInputHandlers) {
-        //const char* str = std::string(msg).c_str();
-        //handler->handlePacket(str);
-      }
+    size_t msgSize = mSocket->read(msg);
+    if (msgSize > 0 && msg != nullptr) {
 
-      std::cout << msg;
+      Packet packet = extractPacket(msg, msgSize);
+      for each (auto handler in mInputHandlers) {
+        handler->handlePacket(packet);
+      }
     }
   }
 }

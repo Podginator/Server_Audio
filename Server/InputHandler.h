@@ -1,24 +1,31 @@
 #pragma once
 
+
+enum Type {
+  NO_OPP = 0,
+  ACKNOWLEDGE,
+  EXIT,
+  AUDIO,
+  FILELIST,
+  TRACK,
+  FRIEND
+};
+
 /**
 * The response object.
 */
 struct Packet {
 public:
 
-  enum TYPE {
-    NO_OPP = 0,
-    ACKNOWLEDGE,
-    EXIT,
-    AUDIO,
-    FILE,
-    TRACK,
-    FRIEND
-  };
+  //Type of the Packet. 
+  Type type;
 
-	TYPE responseId;
+  // Size of the Data. 
+  size_t size;
 
-	const char* response;
+  //Char* Array.
+  const char* packetData;
+
 };
 
 /**

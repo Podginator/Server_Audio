@@ -116,7 +116,11 @@
     <ClInclude Include="AudioServerHandler.h" />
     <ClInclude Include="AudioSocketManagerFactory.h" />
     <ClInclude Include="ClosingServerHandler.h" />
+    <ClInclude Include="FileList.h" />
     <ClInclude Include="FilePackager.h" />
+    <ClInclude Include="FileConverter.h" />
+    <ClInclude Include="Song.h" />
+    <ClInclude Include="PacketExtracter.h" />
     <ClInclude Include="SocketManagerFactory.h" />
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="ConcurrentQueue.h" />
@@ -126,6 +130,7 @@
     <ClInclude Include="ServerManager.h" />
     <ClInclude Include="ServerSocket.h" />
     <ClInclude Include="Socket.h" />
+    <ClInclude Include="SongFileConverter.h" />
     <ClInclude Include="stdadfx.h" />
     <ClInclude Include="WavFilePackager.h" />
   </ItemGroup>

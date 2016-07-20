@@ -16,5 +16,7 @@ CloserServerHandler::CloserServerHandler(ServerManager* servManager, std::shared
 //  return a Response Struct to send back.
 // @param sentMessage the Message we have been set.
 void CloserServerHandler::handlePacket(const Packet & sentMessage) {
-  // if close then close.
+  if (sentMessage.type == Type::CLOSE) {
+    mServerManager->removeSocket(mSocket);
+  }
 }

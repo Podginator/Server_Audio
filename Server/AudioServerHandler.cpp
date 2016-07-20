@@ -31,6 +31,26 @@ void AudioServerHandler::handlePacket(const Packet& sentMessage) {
     break;
   }
   case Type::FILELIST:
+    size_t songSize = sizeof(Song);
+    std::vector<std::pair<Song, std::string>> songList = fileList->get();
+    size_t bufferSize = songSize * songList.size();
+
+    char* byteArray = new char[bufferSize];
+    char* pointer = byteArray;
+
+    for (auto file : fileList->get()) {
+      auto type = file.first;
+      memcpy(pointer, &type, songSize);
+      pointer += songSize;
+    }
+
+    Packet packet;
+    packet.type = Type::FILELIST;
+    packet.packetData = byteArray;
+    packet.size = bufferSize;
+    
+    mConQueue->push(packet);
+
     break;
   }
 }

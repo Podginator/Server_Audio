@@ -8,6 +8,7 @@ enum Type {
   AUDIO,
   FILELIST,
   TRACK,
+  CLOSE,
   FRIEND
 };
 

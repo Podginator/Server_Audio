@@ -29,6 +29,8 @@ ServerManager::~ServerManager() {
 //
 void ServerManager::removeSocket(std::shared_ptr<Socket> socket) {
   //To do remove.
+
+  std::cout << "Remove a socket" << std::endl;
 }
 
 //

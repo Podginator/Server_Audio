@@ -106,6 +106,10 @@ private:
   //The Condition variable has events.
   std::condition_variable mHasItems;
 
+  std::mutex mRunningMutex;
+
+  bool mIsRunning = false; 
+
   //
   // <Method>
   //		sendTask

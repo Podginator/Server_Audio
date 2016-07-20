@@ -33,6 +33,8 @@ ClientManager::ClientManager(std::shared_ptr<Socket> socket,
 //		Starts the threads.
 //
 void ClientManager::start() {
+  mIsRunning = true;
+
   receiveThread = std::thread(&ClientManager::recvTask, this);
   sendThread = std::thread(&ClientManager::sendTask, this);
 }
@@ -85,6 +87,8 @@ std::shared_ptr<ConcurrentQueue<Packet>> ClientManager::getSendQueue() {
 void ClientManager::closeClient() {
   sendThread.join();
   receiveThread.join();
+
+  //Wait to get to here, then close.
   mSocket->close();
 }
 
@@ -96,14 +100,15 @@ void ClientManager::closeClient() {
 //		Drains the Queue and sends any 
 //    packets to the connected client.
 void ClientManager::sendTask() {
-  while (true) {
+  while (mIsRunning) {
     std::unique_lock<std::mutex> drainLock(mMutex, std::defer_lock);
     drainLock.lock();
     auto item = mSendQueue->pop();
 
+
     //Send the response to the server.
-    if (item.packetData != nullptr) {
-      mSocket->send((const char*)item.packetData);
+    if ((item.packetData != nullptr || item.type != Type::NO_OPP)) {
+      mSocket->send((const char*)item.packetData, item.size);
     }
 
     drainLock.unlock();
@@ -118,15 +123,25 @@ void ClientManager::sendTask() {
 //    Sends them to the input handlers for 
 //    Processing.
 void ClientManager::recvTask() {
-  while (true) {
+  while (mIsRunning) {
     char* msg = nullptr;
     size_t msgSize = mSocket->read(msg);
     if (msgSize > 0 && msg != nullptr) {
-
       Packet packet = extractPacket(msg, msgSize);
       for each (auto handler in mInputHandlers) {
         handler->handlePacket(packet);
       }
+    } else if (msgSize == 0) {
+      // Send a closing flag. 
+      Packet packet;
+      packet.type = Type::CLOSE;
+      for each (auto handler in mInputHandlers) {
+        handler->handlePacket(packet);
+      }
+
+      mIsRunning = false;
+      closeClient();
+      
     }
   }
 }

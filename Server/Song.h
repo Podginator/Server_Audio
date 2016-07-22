@@ -3,9 +3,9 @@
 struct Song {
 
   //Song Name
-  char SongName[128]; 
+  char SongName[64]; 
 
-  char ArtistName[128];
+  char ArtistName[64];
 
   int SongLength; 
 

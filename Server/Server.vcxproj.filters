@@ -31,6 +31,12 @@
     <Filter Include="Header Files\FolderObserver">
       <UniqueIdentifier>{ceaa2b05-7465-4468-9c8e-97128948ed88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Model">
+      <UniqueIdentifier>{944bf37c-9d95-49f9-b8b3-8d67bb4f4dad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\File">
+      <UniqueIdentifier>{a913f074-0283-44bc-af6e-bad5ae540ebc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdadfx.h">
@@ -72,26 +78,26 @@
     <ClInclude Include="AudioSocketManagerFactory.h">
       <Filter>Header Files\Server</Filter>
     </ClInclude>
-    <ClInclude Include="WavFilePackager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FilePackager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Song.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
     <ClInclude Include="FileList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketExtracter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\File</Filter>
     </ClInclude>
     <ClInclude Include="FileConverter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\File</Filter>
     </ClInclude>
-    <ClInclude Include="Song.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FilePackager.h">
+      <Filter>Header Files\File</Filter>
     </ClInclude>
     <ClInclude Include="SongFileConverter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\File</Filter>
+    </ClInclude>
+    <ClInclude Include="WavFilePackager.h">
+      <Filter>Header Files\File</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketExtracter.h">
+      <Filter>Header Files\Client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

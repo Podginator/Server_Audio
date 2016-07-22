@@ -15,7 +15,7 @@ public:
   virtual Song getClassFromFile(const std::string& fileDir, const std::string& fileName) {
     WavFilePackager::waveHeader header;
     size_t bufferSize = 44;
-    char* buffer = new char[bufferSize];
+    byte* buffer = new byte[bufferSize];
     Song res;
 
     packager.openFile(fileDir + '\\' + fileName);
@@ -23,7 +23,8 @@ public:
       packager.getHeader(buffer, bufferSize);
       memcpy(&header, buffer, bufferSize);
 
-      int timeLen = packager.getTotalSize() / (header.sample_rate * header.num_channels * header.bits_per_sample / 8);
+      //int timeLen = packager.getTotalSize() / (header.sample_rate * header.num_channels * header.bits_per_sample / 8);
+      int timeLen = 400;
       std::size_t found = fileName.find("_");
       if (found != std::string::npos) {
         //eh. Do this later.

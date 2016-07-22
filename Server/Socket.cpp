@@ -1,4 +1,5 @@
 #include "Socket.h"
+#include "InputHandler.h"
 
 //
 // <Method>
@@ -30,11 +31,11 @@ Socket::~Socket() {
 //		Read the data from the Socket.
 // @param  The Data retrieved from the server
 //
-int Socket::read(char*& data) {
+int Socket::read(char* &data) {
 	bool ok = true;
 	int totalBytes = 0;
   //Read a buffer. 
-  char* buffer = new char[1024];
+  char* buffer = new char[2048];
 	int byteRead = recv(socketFileDesc, buffer, 2048, 0);
 
 	if (byteRead <= 0) {
@@ -44,12 +45,11 @@ int Socket::read(char*& data) {
 
 	if (ok) {
     totalBytes = byteRead;
-    data = new char[totalBytes + 1];
+    data = new char[totalBytes];
     memcpy(data, buffer, totalBytes);
-    data[totalBytes] = '\0';
 	}
 
-  delete buffer;
+  delete[] buffer;
 	return totalBytes;
 }
 
@@ -60,10 +60,10 @@ int Socket::read(char*& data) {
 //		Send the data to the socket
 // @param  data to send
 //
-int Socket::send(const char*& data, size_t dataSize) {
+int Socket::send(byte* data, size_t dataSize) {
 	int returnVal = -1;
 	if (data) {
-		int returnVal = ::send(socketFileDesc, data, dataSize, 0);
+		int returnVal = ::send(socketFileDesc, (char*)data, dataSize, 0);
 	}
 
 	return returnVal;

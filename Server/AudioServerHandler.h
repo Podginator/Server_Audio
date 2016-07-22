@@ -7,6 +7,8 @@
 #include "FileList.h"
 #include "Song.h"
 #include "SongFileConverter.h"
+#include <atomic>
+
 
 /**
 * The AudioServer Handler
@@ -16,27 +18,30 @@ public:
 
   //Constructor, takes a ConcurrentQueue, which is often associated with 
   //the 
-  AudioServerHandler(std::shared_ptr<ConcurrentQueue<Packet>> conQue);
+  AudioServerHandler(std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> conQue);
+ 
   //
   // <Method> 
   //  getResponse
   // <Summary> 
   //  return a Response Struct to send back.
   // @param sentMessage the Message we have been set.
-  void handlePacket(const Packet & sentMessage);
+  void handlePacket(const std::shared_ptr<Packet>& sentMessage);
 private: 
-  bool isRunning = false;
+  
+  // Is the current thread running
+  std::atomic_bool isRunning = false;
 
-  bool readThreadActive = false;
+  // Is the read thread running
+  std::atomic_bool readThreadActive = false;
 
-
-  // The Mutex 
   std::mutex mMutex;
 
-  //
-  std::condition_variable mIsOnly;
+  // Is this the only thread running.
+  std::condition_variable_any mIsOnly;
+  
   //The Concurrent Queue to drain from. 
-  std::shared_ptr<ConcurrentQueue<Packet>> mConQueue;
+  std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> mConQueue;
 
   std::shared_ptr<FileList<Song>> fileList;
 

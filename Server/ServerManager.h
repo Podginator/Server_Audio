@@ -43,7 +43,7 @@ public:
   // <Summary>
   //   remove the reference to the socket from the list.
   //
-  void removeSocket(std::shared_ptr<Socket> socket);
+  void removeSocket(std::shared_ptr<ClientManager> socket);
 
 private:
 	//The Server Socket we're listening on.

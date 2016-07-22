@@ -6,6 +6,7 @@
 #include "InputHandler.h"
 #include <vector>
 #include "ConcurrentQueue.h"
+#include <atomic>
 
 //
 // The Manager Class to handle a single instance of 
@@ -33,7 +34,7 @@ public:
   // @param queue The Queue to drain from. 
   //
   ClientManager(std::shared_ptr<Socket> socket,
-    std::shared_ptr<ConcurrentQueue<Packet>> queue);
+    std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> queue);
 
 
   //Destructor.
@@ -70,7 +71,7 @@ public:
   // <Summary>
   //		Get the send queue
   //@return The Send Queue.
-  std::shared_ptr<ConcurrentQueue<Packet>> getSendQueue();
+  std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> getSendQueue();
 
   //
   // <Method>
@@ -98,7 +99,7 @@ private:
   std::vector<std::shared_ptr<InputHandler>> mInputHandlers;
 
   // A Send Queue. We drain this queue and send back to the C++.
-  std::shared_ptr<ConcurrentQueue<Packet>> mSendQueue;
+  std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> mSendQueue;
 
   // The mutex
   std::mutex mMutex;
@@ -108,7 +109,7 @@ private:
 
   std::mutex mRunningMutex;
 
-  bool mIsRunning = false; 
+  std::atomic_bool mIsRunning = false; 
 
   //
   // <Method>

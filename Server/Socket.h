@@ -39,7 +39,7 @@ public:
 	//		Send the data to the socket
 	// @param  data to send
 	//
-	int send(const char * &data, size_t dataSize);
+	int send(byte* data, size_t dataSize);
 
 	//
 	// <Method>

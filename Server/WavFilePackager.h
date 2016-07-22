@@ -73,7 +73,7 @@ public:
   //  The Size of the buffer we want to write to.
   //Return : Size_T
   //   The size of the written buffer.
-  virtual size_t getNextChunk(char* buffer, size_t bufferSize);
+  virtual size_t getNextChunk(byte* buffer, size_t bufferSize);
 
   //Name: Get Header
   //  Get the Header of this file.
@@ -83,7 +83,7 @@ public:
   //  The Size of the buffer we want to write to.
   //Return : Size_T
   //   The size of the written buffer.
-  virtual size_t getHeader(char* buffer, size_t bufferSize);
+  virtual size_t getHeader(byte* buffer, size_t bufferSize);
 
 private:
 

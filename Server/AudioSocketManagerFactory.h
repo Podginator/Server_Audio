@@ -11,12 +11,12 @@ public:
     std::shared_ptr<ClientManager> audioManager = std::make_shared<ClientManager>(socket);
 
     //Get the drain queue from the audio Manager
-    std::shared_ptr<ConcurrentQueue<Packet>> drainQueue = audioManager->getSendQueue();
+    std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> drainQueue = audioManager->getSendQueue();
 
     //Create an audio handler. 
     std::shared_ptr<InputHandler> audioHandler = std::make_shared<AudioServerHandler>(drainQueue);
     //Create the ClosingServerHandler
-    std::shared_ptr<InputHandler> closeHandler = std::make_shared<CloserServerHandler>(servMan, socket);
+    std::shared_ptr<InputHandler> closeHandler = std::make_shared<CloserServerHandler>(servMan, audioManager);
     
     //add the listeners.
     audioManager->addListener(audioHandler);

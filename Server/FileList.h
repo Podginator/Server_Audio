@@ -99,7 +99,7 @@ public:
       do {
         if (!(fileDir.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
           std::string fileName(fileDir.cFileName);
-          std::optional<T> file = fileConverter->getClassFromFile(mFileLoc, fileName);
+          T file = fileConverter->getClassFromFile(mFileLoc, fileName);
           mFileMap.push_back(std::pair<T, std::string>( file, mFileLoc + fileName));
         }
       } while (::FindNextFile(hFind, &fileDir));

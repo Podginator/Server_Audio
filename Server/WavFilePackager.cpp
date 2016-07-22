@@ -96,7 +96,7 @@ bool WavFilePackager::closeFile() {
 //  The Size of the buffer we want to write to.
 //Return : Size_T
 //   The size of the written buffer.
-size_t WavFilePackager::getNextChunk(char* buffer, size_t bufferSize) {
+size_t WavFilePackager::getNextChunk(byte* buffer, size_t bufferSize) {
   int err = 0;
   size_t res = 0;
   //Fseek from extracted location.
@@ -120,7 +120,7 @@ size_t WavFilePackager::getNextChunk(char* buffer, size_t bufferSize) {
 //  The Size of the buffer we want to write to.
 //Return : Size_T
 //   The size of the written buffer.
-size_t WavFilePackager::getHeader(char* buffer, size_t bufferSize) {
+size_t WavFilePackager::getHeader(byte* buffer, size_t bufferSize) {
   size_t read = bufferSize >= sizeof(waveHeader) ? sizeof(waveHeader) : bufferSize;
 
   //Then copy the header into the buffer.

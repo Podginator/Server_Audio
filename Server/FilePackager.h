@@ -28,14 +28,14 @@ public:
   // Fill the provided buffer with the next set of the Package.
   virtual size_t // OUT Char Buffer of the Next Chunk of the file. 
   getNextChunk(
-    char* buffer,
+    byte* buffer,
     size_t bufferSize // IN - The Attempted Buffer Size, OUT - How much was written to the buffer.
     ) = 0;
 
   // Retrieve the header of the file we're wishing to retrieve from.
   virtual size_t // OUT Char buffer storing the Buffer. 
   getHeader(
-    char* buffer, // IN/OUT- The Flag if it's succeeded
+    byte* buffer, // IN/OUT- The Flag if it's succeeded
     size_t bufferSize // IN - The Attempted Buffer Size, OUT - How much was written to the buffer.
     ) = 0;
 

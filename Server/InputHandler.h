@@ -65,12 +65,16 @@ class InputHandler
 {
 public:
 
+  //Constructor.
+  //Can call with either 1 Type Ie: InputHandler(Type::Audio)
+  //Or can call with multiple, IE InputHandler(Type::Audio & Type::FileList)
   InputHandler(Type listenFor) {
     mListenFor = listenFor;
   }
 
-  Type listensFor(Type type) {
-    return type & mListenFor;
+  // Returns True if Type & Listen for > 1
+  bool listensFor(Type type) {
+    return (bool) (type & mListenFor);
   }
 
   //
@@ -81,5 +85,6 @@ public:
   // @param sentMessage the Message we have been set.
 	virtual void handlePacket(const std::shared_ptr<Packet>& packet) = 0;
 private:
+  // What type this is listening for.
   Type mListenFor;
 };

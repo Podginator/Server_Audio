@@ -34,7 +34,8 @@ private:
 
   // Is the read thread running
   std::atomic_bool readThreadActive = false;
-
+  
+  // The Mutex.
   std::mutex mMutex;
 
   // Is this the only thread running.
@@ -43,8 +44,13 @@ private:
   //The Concurrent Queue to drain from. 
   std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> mConQueue;
 
+  // The File List of songs.
   std::shared_ptr<FileList<Song>> fileList;
 
+  // The File Parser thread. 
+  std::thread fileParserThread;
+
+
   //Request a file. 
-  void requestFile(const std::string& fileName);
+  void requestFile(Song* fileName);
 };

@@ -18,11 +18,21 @@ AudioServerHandler::AudioServerHandler(std::shared_ptr<ConcurrentQueue<std::shar
 void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage) {
   //Change track, therefore. 
   switch (sentMessage->type) {
-  case Type::AUDIO:
   case Type::TRACK: 
   {
-    std::thread audioParser(&AudioServerHandler::requestFile, this, std::string("first"));
-    audioParser.detach();
+    // If one is already running, join it.
+    if (fileParserThread.joinable()) {
+      isRunning = false; 
+      fileParserThread.join();
+    }
+
+    Song* packetSong = new Song();
+
+    memcpy(packetSong, sentMessage->packetData, sentMessage->size);
+
+    // Then Run a new one.
+    fileParserThread = std::thread(&AudioServerHandler::requestFile, this, packetSong);
+    fileParserThread.detach();
     break;
   }
   case Type::EXIT: {
@@ -31,8 +41,7 @@ void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage
   }
   case Type::FILELIST:
     size_t songSize = sizeof(Song);
-    std::vector<std::pair<Song, std::string>> songList = fileList->get();
-    size_t maxBufferSize = songSize * songList.size();
+    size_t maxBufferSize = songSize * fileList->get().size();
 
     byte* byteArray = new byte[Packet::maxPacketSize];
     byte* pointer = byteArray;
@@ -72,10 +81,11 @@ void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage
 
 
 // Request the file and use it to 
-void AudioServerHandler::requestFile(const std::string& fileName){
+void AudioServerHandler::requestFile(Song* song){
   //Wait for the response from the other thread. 
   
  
+  //Ensure that there's only 1 Read thread active in this instance. If not, attempt to kill it. 
   if (isRunning || readThreadActive) {
     isRunning = false;
 
@@ -87,28 +97,36 @@ void AudioServerHandler::requestFile(const std::string& fileName){
   isRunning = true;
   readThreadActive = true;
 
-  //First grab the file
-  WavFilePackager packager;
-  packager.openFile("C:\\daisy.wav");
+  //Get the index of the thread.
+  int index = fileList->indexOf(*(song));
 
-  // Check that we can 
-  if (packager.isFileOpen() && isRunning) {
+  //If we've found the file. 
+  if (index > -1) {
+    std::string fileName = fileList->get().at(index).second;
 
-    size_t headerSize = 44;
-    byte* headerBuffer = new byte[headerSize];
-    packager.getHeader(headerBuffer, headerSize);
+    //First grab the file
+    WavFilePackager packager;
+    packager.openFile(fileName);
 
-    std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::AUDIO, headerSize, headerBuffer);
-    mConQueue->push(packet);
+    // Check that we can 
+    if (packager.isFileOpen() && isRunning) {
 
-    while (!packager.isFileComplete() && isRunning) {
-      size_t bufferSize = Packet::maxPacketSize;
-      byte* dataBuffer = new byte[bufferSize];
-      
-      size_t actualSize = packager.getNextChunk(dataBuffer, bufferSize);
-      std::shared_ptr<Packet> dataPacket = std::make_shared<Packet>(Type::AUDIO, actualSize, dataBuffer);
-      
+      size_t headerSize = 44;
+      byte* headerBuffer = new byte[headerSize];
+      packager.getHeader(headerBuffer, headerSize);
+
+      std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::AUDIO, headerSize, headerBuffer);
       mConQueue->push(packet);
+
+      while (!packager.isFileComplete() && isRunning) {
+        size_t bufferSize = Packet::maxPacketSize;
+        byte* dataBuffer = new byte[bufferSize];
+
+        size_t actualSize = packager.getNextChunk(dataBuffer, bufferSize);
+        std::shared_ptr<Packet> dataPacket = std::make_shared<Packet>(Type::AUDIO, actualSize, dataBuffer);
+
+        mConQueue->push(packet);
+      }
     }
   }
  

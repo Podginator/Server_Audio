@@ -69,7 +69,7 @@ public:
     size_t res, i = -1; 
     for (std::pair<T, std::string> objects : mFileMap) {
       i++; 
-      if (objects.first() == obj) {
+      if (objects.first == obj) {
         res = i;
         break;
       }

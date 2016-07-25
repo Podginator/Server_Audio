@@ -18,7 +18,7 @@ public:
 
   //Constructor, takes a ConcurrentQueue, which is often associated with 
   //the 
-  AudioServerHandler(std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> conQue);
+  AudioServerHandler(std::weak_ptr<ConcurrentQueue<Packet>> conQue);
  
   //
   // <Method> 
@@ -26,7 +26,7 @@ public:
   // <Summary> 
   //  return a Response Struct to send back.
   // @param sentMessage the Message we have been set.
-  void handlePacket(const std::shared_ptr<Packet>& sentMessage);
+  void handlePacket(const Packet& sentMessage);
 private: 
   
   // Is the current thread running
@@ -42,7 +42,7 @@ private:
   std::condition_variable_any mIsOnly;
   
   //The Concurrent Queue to drain from. 
-  std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> mConQueue;
+  std::weak_ptr<ConcurrentQueue<Packet>> mConQueue;
 
   // The File List of songs.
   std::shared_ptr<FileList<Song>> fileList;

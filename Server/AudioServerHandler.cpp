@@ -7,7 +7,7 @@
 //Constructor. 
 // Pass the Song File Converter to the File List. 
 // Pass the queue.
-AudioServerHandler::AudioServerHandler(std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> conQue) : InputHandler(Type::AUDIO | Type::TRACK | Type::EXIT | Type::FILELIST) {
+AudioServerHandler::AudioServerHandler(std::weak_ptr<ConcurrentQueue<Packet>> conQue) : InputHandler(Type::AUDIO | Type::TRACK | Type::EXIT | Type::FILELIST) {
     mConQueue = conQue;
     auto conv = std::make_shared<SongFileConverter>();
     fileList = std::make_shared<FileList<Song>>("C:\\", "wav", conv);
@@ -19,9 +19,9 @@ AudioServerHandler::AudioServerHandler(std::shared_ptr<ConcurrentQueue<std::shar
 // <Summary> 
 //  return a Response Struct to send back.
 // @param sentMessage the Message we have been set.
-void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage) {
+void AudioServerHandler::handlePacket(const Packet& sentMessage) {
   //Change track, therefore. 
-  switch (sentMessage->type) {
+  switch (sentMessage.type) {
   case Type::TRACK: 
   {
     // If one is already running, join it.
@@ -31,12 +31,16 @@ void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage
     }
 
     std::shared_ptr<Song> packetSong = std::make_shared<Song>();
-    int sizeOf = sizeof(Song);
-    memcpy(packetSong.get(), sentMessage->packetData, sentMessage->size);
+    
 
-    // Then Run a new one.
-    fileParserThread = std::thread(&AudioServerHandler::requestFile, this, packetSong);
-    fileParserThread.detach();
+    int sizeOf = sizeof(Song);
+    if (sizeOf == sentMessage.size) {
+      memcpy(packetSong.get(), sentMessage.packetData, sentMessage.size);
+
+        // Then Run a new thread requesting the file and sending it.
+      fileParserThread = std::thread(&AudioServerHandler::requestFile, this, packetSong);
+      fileParserThread.detach();
+    }
     break;
   }
   case Type::EXIT: {
@@ -59,8 +63,11 @@ void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage
       //Todo, buffer out into smaller packets. 
       if ((used + songSize) > Packet::maxPacketSize) {
         //Make the packet. 
-        std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::FILELIST, used, byteArray);
-        mConQueue->push(packet);
+        Packet intermediatePacket(Type::FILELIST, used, byteArray);
+
+        if (auto queue = mConQueue.lock()) {
+          queue->push(intermediatePacket);
+        }
 
         //Delete the existing one.
         delete[] byteArray;
@@ -76,8 +83,10 @@ void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage
     }
 
 
-    std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::FILELIST, used, byteArray);
-    mConQueue->push(packet);
+    Packet finalPacket(Type::FILELIST, used, byteArray);
+    if (auto queue = mConQueue.lock()) {
+      queue->push(finalPacket);
+    }
 
     //Clear buffer. 
     delete[] byteArray;
@@ -120,19 +129,23 @@ void AudioServerHandler::requestFile(std::shared_ptr<Song> song){
       size_t headerSize = 44;
       byte* headerBuffer = new byte[headerSize];
       packager.getHeader(headerBuffer, headerSize);
-      std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::AUDIO, headerSize, headerBuffer);
+      Packet packet(Type::AUDIO, headerSize, headerBuffer);
       delete[] headerBuffer;
 
-      mConQueue->push(packet);
+      if (auto queue = mConQueue.lock()) {
+        queue->push(packet);
+      }
 
       while (!packager.isFileComplete() && isRunning) {
         size_t bufferSize = Packet::maxPacketSize;
         byte* dataBuffer = new byte[bufferSize];
 
         size_t actualSize = packager.getNextChunk(dataBuffer, bufferSize);
-        std::shared_ptr<Packet> dataPacket = std::make_shared<Packet>(Type::AUDIO, actualSize, dataBuffer);
+        Packet dataPacket(Type::AUDIO, actualSize, dataBuffer);
 
-        mConQueue->push(dataPacket);
+        if (auto queue = mConQueue.lock()) {
+          queue->push(dataPacket);
+        }
 
         delete[] dataBuffer;
       }

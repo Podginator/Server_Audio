@@ -12,7 +12,9 @@ enum Type {
   FILELIST = 1 << 4,
   TRACK = 1 << 5,
   CLOSE = 1 << 6,
-  FRIEND = 1 << 7
+  FRIEND = 1 << 7,
+  First = NO_OPP,
+  Last = FRIEND
 };
 
 //Expose bitwise operators.
@@ -54,9 +56,8 @@ public:
     this->type = type; 
     this->size = size; 
 
-    if (data != nullptr) {
-      //Todo memcpy?
-      memcpy(packetData, data, maxPacketSize);
+    if (data != nullptr) {      
+      std::copy(data, data + size, packetData);
     }
   }
 
@@ -87,7 +88,7 @@ public:
   // <Summary> 
   //  return a Response Struct to send back.
   // @param sentMessage the Message we have been set.
-	virtual void handlePacket(const std::shared_ptr<Packet>& packet) = 0;
+	virtual void handlePacket(const Packet& packet) = 0;
 private:
   // What type this is listening for.
   Type mListenFor;

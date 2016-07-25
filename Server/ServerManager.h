@@ -37,22 +37,12 @@ public:
 	//
   void listen();
 
-  //
-  // <Method>
-  //		removeSocket
-  // <Summary>
-  //   remove the reference to the socket from the list.
-  //
-  void removeSocket(std::shared_ptr<ClientManager> socket);
 
 private:
 	//The Server Socket we're listening on.
   std::shared_ptr<ServerSocket> mServerSocket;
 
   std::shared_ptr<SocketManagerFactory> mManagerFactory;
-
-	//The Set of Sockets.
-	std::set<std::shared_ptr<ClientManager>> mSocketSet;
 
   //
   // <Method>

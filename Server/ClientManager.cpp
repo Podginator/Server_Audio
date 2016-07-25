@@ -40,13 +40,26 @@ void ClientManager::start() {
 
   receiveThread = std::thread(&ClientManager::recvTask, this);
   sendThread = std::thread(&ClientManager::sendTask, this);
+
+  receiveThread.join();
+
+
+  // Send a closing flag. 
+  std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::CLOSE, 0, nullptr);
+  //Stop The Concurrent Queue from blocking to end.
+  mSendQueue->push(std::make_shared<Packet>(Type::NO_OPP, 0, nullptr));
+
+  sendThread.join();
+
+
+  mInputHandlers.clear();
+  closeClient();
 }
 
 
 //Destructor.
 ClientManager::~ClientManager() {
   std::cout << "Deleted Client Manager" << std::endl; 
-  closeClient();
 }
 
 //
@@ -93,36 +106,6 @@ std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> ClientManager::getSend
 void ClientManager::closeClient() {
   mIsRunning = false; 
 
-  if (receiveThread.joinable()) {
-    receiveThread.join();
-  }
-
-
-  // Send a closing flag. 
-  std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::CLOSE, 0, nullptr);
-
-  //Stop The Concurrent Queue from blocking to end.
-  mSendQueue->push(std::make_shared<Packet>(Type::NO_OPP, 0, nullptr));
-  if (mIsRunning) {
-    for each (auto handler in mInputHandlers) {
-      if (handler->listensFor(packet->type)) {
-        handler->handlePacket(packet);
-      }
-    }
-  }
-  
-  if (sendThread.joinable()) {
-    sendThread.join();
-  }
-
-  if (mSendQueue != nullptr) {
-    //Empty the queue, removing any pending Sends. 
-    for (int i = 0; i < mSendQueue->size(); i++) {
-      // Pop this reference - Then delete it.
-      mSendQueue->pop();
-    }
-  }
-
 
  
 
@@ -139,10 +122,11 @@ void ClientManager::closeClient() {
 //    packets to the connected client.
 void ClientManager::sendTask() {
   while (mIsRunning) {
-    std::unique_lock<std::mutex> drainLock(mMutex, std::defer_lock);
+    std::unique_lock<std::mutex> drainLock(mMutex);
     auto item = mSendQueue->pop();
-    mAcknowledged.wait(drainLock, [&] { return (bool)mHasAcknowledged; });
-
+    mAcknowledged.wait(drainLock, [&] { return mHasAcknowledged.load(); });
+    
+    mHasAcknowledged.store(false);
     //Send the response to the server.
     if ((item->packetData != nullptr && item->type != Type::NO_OPP)) {
       
@@ -154,7 +138,7 @@ void ClientManager::sendTask() {
       // Send to the client
       memcpy(data, item.get(), packetSize);
 
-      mHasAcknowledged = false;
+      
       //Why.
       mSocket->send(data, packetSize);
       delete[] data;
@@ -182,7 +166,7 @@ void ClientManager::recvTask() {
 
       if (packet->type == Type::ACKNOWLEDGE) {
         //We have acknowledged. 
-        mHasAcknowledged = true;
+        mHasAcknowledged.store(true);
         mAcknowledged.notify_all();
 
       } else {
@@ -195,8 +179,8 @@ void ClientManager::recvTask() {
       delete[] msg;
     }
     else if (msgSize == 0) {
+      mIsRunning.store(false);
       delete[] msg;
-      closeClient();
     }
   }
 }

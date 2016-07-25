@@ -28,9 +28,6 @@
     <Filter Include="Header Files\Client\Handlers">
       <UniqueIdentifier>{d0668107-fcc5-4de5-afa7-4a05c170e558}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\FolderObserver">
-      <UniqueIdentifier>{ceaa2b05-7465-4468-9c8e-97128948ed88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Model">
       <UniqueIdentifier>{944bf37c-9d95-49f9-b8b3-8d67bb4f4dad}</UniqueIdentifier>
     </Filter>
@@ -70,9 +67,6 @@
       <Filter>Header Files\Client\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="AudioServerHandler.h">
-      <Filter>Header Files\Client\Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="ClosingServerHandler.h">
       <Filter>Header Files\Client\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="AudioSocketManagerFactory.h">
@@ -117,9 +111,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EventHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClosingServerHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClientManager.cpp">

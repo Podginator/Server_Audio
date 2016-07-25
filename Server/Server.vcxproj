@@ -115,7 +115,6 @@
   <ItemGroup>
     <ClInclude Include="AudioServerHandler.h" />
     <ClInclude Include="AudioSocketManagerFactory.h" />
-    <ClInclude Include="ClosingServerHandler.h" />
     <ClInclude Include="FileList.h" />
     <ClInclude Include="FilePackager.h" />
     <ClInclude Include="FileConverter.h" />
@@ -137,7 +136,6 @@
   <ItemGroup>
     <ClCompile Include="AudioServerHandler.cpp" />
     <ClCompile Include="ClientManager.cpp" />
-    <ClCompile Include="ClosingServerHandler.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ServerManager.cpp" />

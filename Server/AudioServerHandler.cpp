@@ -3,12 +3,15 @@
 #include <iostream>
 #include <fstream>
 
+
+//Constructor. 
+// Pass the Song File Converter to the File List. 
+// Pass the queue.
 AudioServerHandler::AudioServerHandler(std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> conQue) : InputHandler(Type::AUDIO | Type::TRACK | Type::EXIT | Type::FILELIST) {
     mConQueue = conQue;
     auto conv = std::make_shared<SongFileConverter>();
     fileList = std::make_shared<FileList<Song>>("C:\\", "wav", conv);
 }
-
 
 //
 // <Method> 
@@ -83,13 +86,10 @@ void AudioServerHandler::handlePacket(const std::shared_ptr<Packet>& sentMessage
   }
 }
 
-
-
 // Request the file and use it to 
 void AudioServerHandler::requestFile(std::shared_ptr<Song> song){
   //Wait for the response from the other thread. 
   
- 
   //Ensure that there's only 1 Read thread active in this instance. If not, attempt to kill it. 
   if (isRunning || readThreadActive) {
     isRunning = false;

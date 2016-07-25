@@ -21,20 +21,6 @@ ServerManager::ServerManager(std::shared_ptr<ServerSocket>& serPtr,
 ServerManager::~ServerManager() {
 }
 
-//
-// <Method>
-//		removeSocket
-// <Summary>
-//   remove the reference to the socket from the list.
-//
-void ServerManager::removeSocket(std::shared_ptr<ClientManager> socket) {
-  //Remove the socket
-  bool removed = mSocketSet.erase(socket);
-
-  if (removed) {
-    std::cout << "Removed Client" << std::endl;
-  }
-}
 
 //
 // <Method>
@@ -60,7 +46,6 @@ void ServerManager::listen() {
 //
 void ServerManager::acceptConnection(std::shared_ptr<Socket> socket) {
   std::shared_ptr<ClientManager> clientManager = mManagerFactory->createSocketManager(socket, this);
-  mSocketSet.insert(clientManager);
   clientManager->start();
   socket = nullptr;
 }
@@ -77,7 +62,7 @@ void ServerManager::getConnections() {
     std::shared_ptr<Socket> socket = mServerSocket->acceptSocket();
     if ((socket != nullptr) && (socket->validate())) {
       std::cout << "Connected! \n";
-      acceptConnection(socket);
+      std::thread([=] { acceptConnection(socket); }).detach();
     }
     socket = nullptr;
   }

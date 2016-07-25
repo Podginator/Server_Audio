@@ -16,11 +16,11 @@ public:
     //Create an audio handler. 
     std::shared_ptr<InputHandler> audioHandler = std::make_shared<AudioServerHandler>(drainQueue);
     //Create the ClosingServerHandler
-    std::shared_ptr<InputHandler> closeHandler = std::make_shared<CloserServerHandler>(servMan, audioManager);
+    //std::shared_ptr<InputHandler> closeHandler = std::make_shared<CloserServerHandler>(servMan, audioManager);
     
     //add the listeners.
     audioManager->addListener(audioHandler);
-    audioManager->addListener(closeHandler);
+    //audioManager->addListener(closeHandler);
 
     socket = nullptr;
 

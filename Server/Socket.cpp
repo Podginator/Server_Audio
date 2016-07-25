@@ -21,6 +21,7 @@ Socket::Socket(int socket, struct sockaddr_in& address) {
 //		Close
 //
 Socket::~Socket() {
+  std::cout << "Ending Socket" << std::endl;
 	close();
 }
 
@@ -63,7 +64,7 @@ int Socket::read(char* &data) {
 int Socket::send(byte* data, size_t dataSize) {
 	int returnVal = -1;
 	if (data) {
-		int returnVal = ::send(socketFileDesc, (char*)data, dataSize, 0);
+		int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), dataSize, 0);
 	}
 
 	return returnVal;

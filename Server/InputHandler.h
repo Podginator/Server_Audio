@@ -46,6 +46,10 @@ public:
 
   Packet() : type(Type::NO_OPP), size(0), packetData() {};
 
+  ~Packet() {
+    std::cout << "Deleted" << std::endl;
+  }
+
   Packet(Type type, int size, byte* data) {
     this->type = type; 
     this->size = size; 

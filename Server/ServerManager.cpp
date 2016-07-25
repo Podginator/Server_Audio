@@ -28,11 +28,6 @@ ServerManager::~ServerManager() {
 //   remove the reference to the socket from the list.
 //
 void ServerManager::removeSocket(std::shared_ptr<ClientManager> socket) {
-  //To do remove.
-  //Hold on to my past. 
-  //It's been so long I don't think I'm gonna last. 
-  socket->closeClient();
-  
   //Remove the socket
   bool removed = mSocketSet.erase(socket);
 
@@ -67,6 +62,7 @@ void ServerManager::acceptConnection(std::shared_ptr<Socket> socket) {
   std::shared_ptr<ClientManager> clientManager = mManagerFactory->createSocketManager(socket, this);
   mSocketSet.insert(clientManager);
   clientManager->start();
+  socket = nullptr;
 }
 
 //
@@ -83,5 +79,6 @@ void ServerManager::getConnections() {
       std::cout << "Connected! \n";
       acceptConnection(socket);
     }
+    socket = nullptr;
   }
 }

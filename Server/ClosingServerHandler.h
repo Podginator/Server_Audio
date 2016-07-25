@@ -16,6 +16,10 @@ public:
   // The Socket Associated to this handler.
   CloserServerHandler(ServerManager* servManager, std::shared_ptr<ClientManager> associatedSocket);
 
+  ~CloserServerHandler() {
+    std::cout << "CloserClose" << std::endl;
+  }
+
   //
   // <Method> 
   //  getResponse

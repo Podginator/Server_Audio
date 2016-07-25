@@ -21,7 +21,7 @@ public:
 	//
 	// Method:    Destructor
 	//
-	~Socket();
+  ~Socket();
 
 	//
 	// <Method>

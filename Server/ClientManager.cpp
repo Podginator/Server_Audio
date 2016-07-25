@@ -10,7 +10,10 @@
 //		Constructs the Server Manager.
 // @param serPtr the Server Socket we want to listen on.
 //
-ClientManager::ClientManager(std::shared_ptr<Socket> socket) : ClientManager(socket, std::make_shared<ConcurrentQueue<std::shared_ptr<Packet>>>()) {}
+ClientManager::ClientManager(std::shared_ptr<Socket> socket) {
+  mSocket = socket;
+  mSendQueue = std::make_shared<ConcurrentQueue<std::shared_ptr<Packet>>>();
+}
 
 //
 // <Method>
@@ -36,14 +39,15 @@ void ClientManager::start() {
   mIsRunning = true;
 
   receiveThread = std::thread(&ClientManager::recvTask, this);
-  receiveThread.detach();
   sendThread = std::thread(&ClientManager::sendTask, this);
-  sendThread.detach();
 }
 
 
 //Destructor.
-ClientManager::~ClientManager() {}
+ClientManager::~ClientManager() {
+  std::cout << "Deleted Client Manager" << std::endl; 
+  closeClient();
+}
 
 //
 // <Method>
@@ -89,17 +93,38 @@ std::shared_ptr<ConcurrentQueue<std::shared_ptr<Packet>>> ClientManager::getSend
 void ClientManager::closeClient() {
   mIsRunning = false; 
 
-  //Send this to the queue to close.
-  mSendQueue->push(std::make_shared<Packet>(Type::NO_OPP, 0, nullptr));
+  if (receiveThread.joinable()) {
+    receiveThread.join();
+  }
 
-  //If these two threads are still running, ensure t hat we've killed them.
+
+  // Send a closing flag. 
+  std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::CLOSE, 0, nullptr);
+
+  //Stop The Concurrent Queue from blocking to end.
+  mSendQueue->push(std::make_shared<Packet>(Type::NO_OPP, 0, nullptr));
+  if (mIsRunning) {
+    for each (auto handler in mInputHandlers) {
+      if (handler->listensFor(packet->type)) {
+        handler->handlePacket(packet);
+      }
+    }
+  }
+  
   if (sendThread.joinable()) {
     sendThread.join();
   }
 
-  if (receiveThread.joinable()) {
-    receiveThread.join();
+  if (mSendQueue != nullptr) {
+    //Empty the queue, removing any pending Sends. 
+    for (int i = 0; i < mSendQueue->size(); i++) {
+      // Pop this reference - Then delete it.
+      mSendQueue->pop();
+    }
   }
+
+
+ 
 
   //Wait to get to here, then close.
   mSocket->close();
@@ -115,9 +140,8 @@ void ClientManager::closeClient() {
 void ClientManager::sendTask() {
   while (mIsRunning) {
     std::unique_lock<std::mutex> drainLock(mMutex, std::defer_lock);
-    drainLock.lock();
     auto item = mSendQueue->pop();
-
+    mAcknowledged.wait(drainLock, [&] { return (bool)mHasAcknowledged; });
 
     //Send the response to the server.
     if ((item->packetData != nullptr && item->type != Type::NO_OPP)) {
@@ -130,13 +154,14 @@ void ClientManager::sendTask() {
       // Send to the client
       memcpy(data, item.get(), packetSize);
 
+      mHasAcknowledged = false;
+      //Why.
       mSocket->send(data, packetSize);
-
-      //Then delete the character array. 
       delete[] data;
-    }
 
-    drainLock.unlock();
+
+      
+    }
   }
 }
 
@@ -154,25 +179,23 @@ void ClientManager::recvTask() {
     size_t msgSize = mSocket->read(msg);
     if (msgSize > 0 && msg != nullptr) {
       std::shared_ptr<Packet> packet = extractPacket(msg, msgSize);
-      for each (auto handler in mInputHandlers) {
-        if (handler->listensFor(packet->type)) {
-          handler->handlePacket(packet);
+
+      if (packet->type == Type::ACKNOWLEDGE) {
+        //We have acknowledged. 
+        mHasAcknowledged = true;
+        mAcknowledged.notify_all();
+
+      } else {
+        for each (auto handler in mInputHandlers) {
+          if (handler->listensFor(packet->type)) {
+            handler->handlePacket(packet);
+          }
         }
       }
-    } else if (msgSize == 0) {
-      // Send a closing flag. 
-      std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::CLOSE, 0, nullptr);
-      packet->type = Type::CLOSE;
-
-      //Stop The Concurrent Queue from blocking to end.
-      mSendQueue->push(std::make_shared<Packet>(Type::NO_OPP, 0, nullptr));
-      for each (auto handler in mInputHandlers) {
-        if (handler->listensFor(packet->type)) {
-          handler->handlePacket(packet);
-        }
-      }
-
-      mIsRunning = false;
+      delete[] msg;
+    }
+    else if (msgSize == 0) {
+      delete[] msg;
       closeClient();
     }
   }

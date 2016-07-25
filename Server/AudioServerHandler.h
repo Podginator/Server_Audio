@@ -52,5 +52,5 @@ private:
 
 
   //Request a file. 
-  void requestFile(Song* fileName);
+  void requestFile(std::shared_ptr<Song> fileName);
 };

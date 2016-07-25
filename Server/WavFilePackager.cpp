@@ -85,6 +85,8 @@ bool WavFilePackager::closeFile() {
     closed = fclose(mOpenFile) == 0;
   }
 
+  mHeader = { 0 };
+
   return closed;
 }
 
@@ -99,13 +101,21 @@ bool WavFilePackager::closeFile() {
 size_t WavFilePackager::getNextChunk(byte* buffer, size_t bufferSize) {
   int err = 0;
   size_t res = 0;
+  // Calculate how much we have to read.
+  size_t calculatedRead = (mExtracted + bufferSize > mTotalSize) ? mTotalSize - mExtracted : bufferSize;
+  // Calculate the amount of buffer we need to use. 
+  
   //Fseek from extracted location.
   err = fseek(mOpenFile, static_cast<long>(mExtracted), SEEK_SET);
 
+
   if (err == 0) {
     //Then extract from the file the next chunk. 
-    res = fread(buffer, bufferSize, 1, mOpenFile);
-    mExtracted += bufferSize;
+    fread(buffer, bufferSize, 1, mOpenFile);
+    //if (amtRead > 0) {
+      mExtracted += bufferSize;
+      res += bufferSize;
+    //}
   }
 
   //Return the size of the buffer.

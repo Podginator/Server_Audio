@@ -104,11 +104,13 @@ private:
   // The mutex
   std::mutex mMutex;
 
+  // Have we acknowledged.
+  std::atomic_bool mHasAcknowledged;
+
   //The Condition variable has events.
-  std::condition_variable mHasItems;
+  std::condition_variable mAcknowledged;
 
-  std::mutex mRunningMutex;
-
+  //We are running.
   std::atomic_bool mIsRunning = false; 
 
   //

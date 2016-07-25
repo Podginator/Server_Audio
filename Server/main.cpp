@@ -19,5 +19,5 @@ int main(int, char**)
   ServerManager manager(servSocket, factManager);
 	manager.listen();
 
-  getchar();
+  while (1) {}
 }

@@ -6,7 +6,7 @@
 // Responds to incoming Audio Calls. We pass the Drainable Queue to the Audio Server Handler. 
 class AudioSocketManagerFactory : public SocketManagerFactory {
 public:
-  virtual std::shared_ptr<ClientManager> createSocketManager(std::shared_ptr<Socket>& socket, ServerManager* servMan) {
+  virtual std::shared_ptr<ClientManager> createSocketManager(std::shared_ptr<Socket> socket, ServerManager* servMan) {
     //Make an instance of the Client Handler.
     std::shared_ptr<ClientManager> audioManager = std::make_shared<ClientManager>(socket);
 
@@ -21,6 +21,8 @@ public:
     //add the listeners.
     audioManager->addListener(audioHandler);
     audioManager->addListener(closeHandler);
+
+    socket = nullptr;
 
     return audioManager;
   }

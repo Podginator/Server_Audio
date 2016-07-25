@@ -15,12 +15,25 @@ struct Song {
   // The length of the song in seconds.
   int SongLength; 
 
-  Song() {}
+  Song() {
+  
+  }
 
-  Song(const Song& song) {
-    strcpy_s(SongName, song.SongName);
-    strcpy_s(ArtistName, song.ArtistName);
-    SongLength = song.SongLength;
+  ~Song() {}
+
+  Song(const Song &obj) {
+    //Copy Song and Artist Names. 
+    strncpy_s(SongName, obj.SongName, 64);
+    strncpy_s(ArtistName, obj.ArtistName, 64);
+    SongLength = obj.SongLength;
+  }
+
+  Song & operator= (const Song &obj) {
+    //Copy Song and Artist Names. 
+    strncpy_s(SongName, obj.SongName, 64);
+    strncpy_s(ArtistName, obj.ArtistName, 64);
+
+    SongLength = obj.SongLength;
   }
 
   //Check equality. 

@@ -22,6 +22,7 @@ public:
     if (packager.isFileOpen()) {
       packager.getHeader(buffer, bufferSize);
       memcpy(&header, buffer, bufferSize);
+      delete[] buffer;
 
       //int timeLen = packager.getTotalSize() / (header.sample_rate * header.num_channels * header.bits_per_sample / 8);
       int timeLen = 400;
@@ -41,6 +42,7 @@ public:
 
       res.SongLength = timeLen;
     }
+    packager.closeFile();
 
     return res;
   }

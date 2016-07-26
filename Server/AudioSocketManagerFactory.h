@@ -11,7 +11,7 @@ public:
     shared_ptr<ClientManager> audioManager = make_shared<ClientManager>(socket);
 
     //Get the drain queue from the audio Manager
-    weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> drainQueue = audioManager->getSendQueue();
+    weak_ptr<ConcurrentQueue<Packet>> drainQueue = audioManager->getSendQueue();
 
     //Create an audio handler. 
     shared_ptr<InputHandler> audioHandler = make_shared<AudioServerHandler>(drainQueue);

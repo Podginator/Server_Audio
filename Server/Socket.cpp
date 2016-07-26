@@ -32,24 +32,19 @@ Socket::~Socket() {
 //		Read the data from the Socket.
 // @param  The size of the data from the server.
 //
-char* Socket::read(size_t& bytesRead) {
-	bool ok = true;
-  char* buffer = nullptr;
-  //Read a buffer. 
-  char intermediateBuf[2048];
-	bytesRead = recv(socketFileDesc, intermediateBuf, 2048, 0);
 
-	if (bytesRead <= 0) {
-		ok = false;
-    bytesRead = 0;
-	}
+size_t Socket::read(char* buffer, const size_t& bytesRead) {
+	bool ok = true;  
+  size_t res = 0;
+  int retrieved = recv(socketFileDesc, buffer, bytesRead, 0);
 
-	if (ok) {
-    buffer = new char[bytesRead];
-    memcpy(buffer, intermediateBuf, bytesRead);
-	}
+  if (retrieved > 0) {
+    res = static_cast<size_t>(retrieved);
+  }
 
-	return buffer;
+  //Error checking, if res = 0 close? 
+
+	return res;
 }
 
 //
@@ -61,6 +56,7 @@ char* Socket::read(size_t& bytesRead) {
 //
 int Socket::send(byte* data, size_t dataSize) {
 	int returnVal = -1;
+
 	if (data) {
 		int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), dataSize, 0);
 	}

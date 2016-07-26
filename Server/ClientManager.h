@@ -34,7 +34,7 @@ public:
   // @param queue The Queue to drain from. 
   //
   ClientManager(shared_ptr<Socket> socket,
-    shared_ptr<ConcurrentQueue<shared_ptr<Packet>>> queue);
+    shared_ptr<ConcurrentQueue<Packet>> queue);
 
 
   //Destructor.
@@ -71,7 +71,7 @@ public:
   // <Summary>
   //		Get the send queue
   //@return The Send Queue.
-  weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> getSendQueue();
+  weak_ptr<ConcurrentQueue<Packet>> getSendQueue();
 
   //
   // <Method>
@@ -99,7 +99,7 @@ private:
   vector<shared_ptr<InputHandler>> mInputHandlers;
 
   // A Send Queue. We drain this queue and send back to the C++.
-  shared_ptr<ConcurrentQueue<shared_ptr<Packet>>> mSendQueue;
+  shared_ptr<ConcurrentQueue<Packet>> mSendQueue;
 
   // The mutex
   mutex mMutex;

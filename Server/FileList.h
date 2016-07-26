@@ -1,13 +1,14 @@
 #pragma once
 
-#include <map>
 #include <stdio.h>
 #include <string>
 #include <iostream>
 #include <windows.h>
+#include <cassert>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 #include "FileConverter.h"
-#include <unordered_map>
 
 template <class T> 
 class FileList {
@@ -52,8 +53,6 @@ public:
   pair<T, string> operator[](int i) {
     return mFileMap.at(i);
   }
-
- 
 
   //Get the Full File Path at this index. 
   string getFullFilePath(int i) {
@@ -115,8 +114,12 @@ public:
     mFileMap.clear();
   }
 
-private:
+  // Returns the size of the internal container.
+  size_t size() {
+    return mFileMap.size();
+  }
 
+private:
 
   // Location of the Files we're looking for 
   string mFileLoc;

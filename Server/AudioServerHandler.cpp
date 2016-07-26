@@ -3,117 +3,104 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
 
-//Constructor. 
-// Pass the Song File Converter to the File List. 
-// Pass the queue.
-AudioServerHandler::AudioServerHandler(weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> conQue) : InputHandler(Type::AUDIO | Type::TRACK | Type::EXIT | Type::FILELIST) {
+//Constructor
+// conQue: Weak_Ptr to a ConcurrentQueue of Packets. This is where we'll send to.
+// Tell the InputHandler that we deal with Track, Exit and File List.
+AudioServerHandler::AudioServerHandler(weak_ptr<ConcurrentQueue<Packet>> conQue) 
+  : InputHandler(Type::TRACK | Type::EXIT | Type::FILELIST) {
     mConQueue = conQue;
-    auto conv = make_shared<SongFileConverter>();
-    fileList = make_shared<FileList<Song>>("C:\\", "wav", conv);
+    fileList = make_shared<FileList<Song>>("C:\\", "wav", make_shared<SongFileConverter>());
 }
 
-//
-// <Method> 
-//  getResponse
-// <Summary> 
-//  return a Response Struct to send back.
-// @param sentMessage the Message we have been set.
-void AudioServerHandler::handlePacket(const weak_ptr<Packet>& sentMessage) {
+//Handle the Packet we have sent 
+//  sentMessage: The Packet we wish to process.  
+void AudioServerHandler::handlePacket(const Packet& sentMessage) {
   //Change track, therefore. 
-  if (auto ptr = sentMessage.lock()) {
+ 
+  switch (sentMessage.type) {
+  case Type::TRACK:
+  {
+    
+    isRunning.store(false);
+    
+    //Create a packet to a song.
+    shared_ptr<Song> packetSong = make_shared<Song>();
 
-    switch (ptr->type) {
-    case Type::TRACK:
-    {
-      // If one is already running, join it.
-      if (fileParserThread.joinable()) {
-        isRunning = false;
-        fileParserThread.join();
-      }
-
-      shared_ptr<Song> packetSong = make_shared<Song>();
-
-
-      int sizeOf = sizeof(Song);
-      if (sizeOf == ptr->size) {
-        memcpy(packetSong.get(), ptr->packetData, ptr->size);
-
-        // Then Run a new thread requesting the file and sending it.
-        fileParserThread = thread(&AudioServerHandler::requestFile, this, packetSong);
-        fileParserThread.detach();
-      }
-      break;
+    //Ensure that the packets contents are the size of a song (as a preliminary check)
+    if (sentMessage.size == sizeof(Song)) {
+      //Copy the memory of the song to a song object. 
+      memcpy(&packetSong, sentMessage.packetData, sentMessage.size);
+      // Then Run a new thread requesting the file and sending it.
+      thread(&AudioServerHandler::requestFile, this, packetSong).detach();
     }
-    case Type::EXIT: {
-      isRunning = false;
-      if (fileParserThread.joinable()) {
-        fileParserThread.join();
-      }
-      break;
-    }
-    case Type::FILELIST:
-      size_t songSize = sizeof(Song);
-      size_t maxBufferSize = songSize * fileList->get().size();
+    break;
+  }
+  case Type::EXIT: {
+    isRunning = false;
+    break;
+  }
+  case Type::FILELIST:
+    size_t songSize = sizeof(Song);
+    size_t maxBufferSize = songSize * fileList->size();
 
-      byte* byteArray = new byte[Packet::maxPacketSize];
-      byte* pointer = byteArray;
-      size_t used = 0;
+    byte* byteArray = new byte[Packet::maxPacketSize];
+    byte* pointer = byteArray;
+    size_t used = 0;
 
-      for (auto file : fileList->get()) {
-        auto type = file.first;
-        //Todo, buffer out into smaller packets. 
-        if ((used + songSize) > Packet::maxPacketSize) {
+    for (auto file : fileList->get()) {
+      auto type = file.first;
+      //Todo, buffer out into smaller packets. 
+      if ((used + songSize) > Packet::maxPacketSize) {
+
+        if (auto queue = mConQueue.lock()) {
           //Make the packet. 
-          shared_ptr<Packet> intermediatePacket = make_shared<Packet>(Type::FILELIST, used, byteArray);
-
-          if (auto queue = mConQueue.lock()) {
-            queue->push(intermediatePacket);
-          }
-
+          Packet intermediatePacket(Type::FILELIST, used, byteArray);
           //Delete the existing one.
           delete[] byteArray;
-          //Clear buffer. 
-          byteArray = new byte[Packet::maxPacketSize];
-          pointer = byteArray;
-          used = 0;
+          queue->push(intermediatePacket);
+        } else {
+          break;
         }
 
-        memcpy(pointer, &type, songSize);
-        pointer += songSize;
-        used += songSize;
+        //Clear buffer. 
+        byteArray = new byte[Packet::maxPacketSize];
+        pointer = byteArray;
+        used = 0;
       }
 
-
-      shared_ptr<Packet> finalPacket = make_shared<Packet>(Type::FILELIST, used, byteArray);
-      if (auto queue = mConQueue.lock()) {
-        queue->push(finalPacket);
-      }
-
-      //Clear buffer. 
-      delete[] byteArray;
-
-      break;
+      memcpy(pointer, &type, songSize);
+      pointer += songSize;
+      used += songSize;
     }
+
+    if (auto queue = mConQueue.lock()) {
+      Packet finalPacket(Type::FILELIST, used, byteArray);
+      queue->push(finalPacket);
+    }
+
+    //Clear buffer. 
+    delete[] byteArray;
+    break;
   }
+ 
 }
 
-// Request the file and use it to 
+// Requst a song, chop it up and send it to te mConQueue
+//   fileName : The Song File we want to dissect.
 void AudioServerHandler::requestFile(shared_ptr<Song> song){
-  //Wait for the response from the other thread. 
   
   //Ensure that there's only 1 Read thread active in this instance. If not, attempt to kill it. 
-  if (isRunning || readThreadActive) {
-    isRunning = false;
+  if (isRunning.load() || readThreadActive.load()) {
+    isRunning.store(false);
 
     unique_lock<mutex> lck(mMutex);
     //Then wait until we have confirmation that all things have shut down. Countdown latch equivalent?
     mIsOnly.wait(mMutex, [&] {return !readThreadActive; });
   }
 
-  isRunning = true;
-  readThreadActive = true;
+  isRunning.store(true);
+  readThreadActive.store(true);
 
   //Get the index of the thread.
   int index = fileList->indexOf(*song);
@@ -133,7 +120,7 @@ void AudioServerHandler::requestFile(shared_ptr<Song> song){
       size_t headerSize = 44;
       byte* headerBuffer = new byte[headerSize];
       packager.getHeader(headerBuffer, headerSize);
-      shared_ptr<Packet> packet = make_shared<Packet>(Type::AUDIO, headerSize, headerBuffer);
+      Packet packet(Type::AUDIO, headerSize, headerBuffer);
       delete[] headerBuffer;
 
       if (auto queue = mConQueue.lock()) {
@@ -145,7 +132,7 @@ void AudioServerHandler::requestFile(shared_ptr<Song> song){
         byte* dataBuffer = new byte[bufferSize];
 
         size_t actualSize = packager.getNextChunk(dataBuffer, bufferSize);
-        shared_ptr<Packet> dataPacket = make_shared<Packet>(Type::AUDIO, actualSize, dataBuffer);
+        Packet dataPacket(Type::AUDIO, actualSize, dataBuffer);
 
         if (auto queue = mConQueue.lock()) {
           queue->push(dataPacket);
@@ -157,9 +144,9 @@ void AudioServerHandler::requestFile(shared_ptr<Song> song){
     packager.closeFile();
   }
 
- 
-  isRunning = false;
-  readThreadActive = false;
+  isRunning.store(false);
+  readThreadActive.store(false);
 
-  mIsOnly.notify_one();
+  //Notify all waiting threads. 
+  mIsOnly.notify_all();
 }

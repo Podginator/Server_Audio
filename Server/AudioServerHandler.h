@@ -17,17 +17,13 @@ using namespace std;
 class AudioServerHandler : public InputHandler {
 public:
 
-  //Constructor, takes a ConcurrentQueue, which is often associated with 
-  //the 
-  AudioServerHandler(weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> conQue);
+  //Constructor
+  // conQue: Weak_Ptr to a ConcurrentQueue of Packets. This is where we'll send to.
+  AudioServerHandler(weak_ptr<ConcurrentQueue<Packet>> conQue);
  
-  //
-  // <Method> 
-  //  getResponse
-  // <Summary> 
-  //  return a Response Struct to send back.
-  // @param sentMessage the Message we have been set.
-  void handlePacket(const weak_ptr<Packet>& sentMessage);
+  //Handle the Packet we have sent 
+  //  sentMessage: The Packet we wish to process.  
+  void handlePacket(const Packet& sentMessage);
 private: 
   
   // Is the current thread running
@@ -42,16 +38,14 @@ private:
   // Is this the only thread running.
   condition_variable_any mIsOnly;
   
-  //The Concurrent Queue to drain from. 
-  weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> mConQueue;
+  //The Concurrent Queue to drain from. s
+  weak_ptr<ConcurrentQueue<Packet>> mConQueue;
 
   // The File List of songs.
   shared_ptr<FileList<Song>> fileList;
 
-  // The File Parser thread. 
-  thread fileParserThread;
 
-
-  //Request a file. 
-  void requestFile(shared_ptr<Song> fileName);
+  // Requst a song, chop it up and send it to te mConQueue
+  //   fileName : The Song File we want to dissect.
+  void requestFile(shared_ptr<Song> songFile);
 };

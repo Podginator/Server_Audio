@@ -57,3 +57,5 @@ Server/Debug/Server.tlog/CL.command.1.tlog
 *.tlog
 Server/Debug/servermanager.obj.enc
 *.idb
+*.exe
+x64/Debug/Server.exe

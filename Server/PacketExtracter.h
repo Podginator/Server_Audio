@@ -5,9 +5,8 @@
 
 // Extract the Packet. 
 // Error handling here. 
-extern shared_ptr<Packet> extractPacket(char* msg, const size_t& packetSize) {
-  shared_ptr<Packet> packet;
-  packet = nullptr;
+extern Packet extractPacket(char* msg, const size_t& packetSize) {
+  Packet packet;
   char* currPos = msg;
   // Okay, so check that we have the right size first.
 
@@ -30,13 +29,12 @@ extern shared_ptr<Packet> extractPacket(char* msg, const size_t& packetSize) {
 
       // As long as the packet isn't greater than the max size we can continue.
       if (size <= Packet::maxPacketSize && size >= 0) {
-        packet = make_shared<Packet>();
-        packet->size = size;
-        packet->type = type;
+        packet.size = size;
+        packet.type = type;
         
-        if (packet->size > 0) {
+        if (packet.size > 0) {
           //and apply the byte data.
-          std::copy(currPos, currPos + size, packet->packetData);
+          std::copy(currPos, currPos + size, packet.packetData);
         }
       }
     }

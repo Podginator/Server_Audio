@@ -23,7 +23,7 @@ public:
   //		Constructs the Server Manager.
   // @param serPtr the Server Socket we want to listen on.
   //
-  ClientManager(std::shared_ptr<Socket> socket);
+  ClientManager(shared_ptr<Socket> socket);
 
   //
   // <Method>
@@ -33,8 +33,8 @@ public:
   // @param serPtr the Server Socket we want to listen on.
   // @param queue The Queue to drain from. 
   //
-  ClientManager(std::shared_ptr<Socket> socket,
-    std::shared_ptr<ConcurrentQueue<Packet>> queue);
+  ClientManager(shared_ptr<Socket> socket,
+    shared_ptr<ConcurrentQueue<shared_ptr<Packet>>> queue);
 
 
   //Destructor.
@@ -54,7 +54,7 @@ public:
   // <Summary>
   //		Adds a Listener to handle incoming responses.
   //@param handler the Handler we wish to add.
-  void addListener(const std::shared_ptr<InputHandler>& handler);
+  void addListener(const shared_ptr<InputHandler>& handler);
 
 
   //
@@ -63,7 +63,7 @@ public:
   // <Summary>
   //		Get all the handlers
   //@return The Input Handlers.
-  std::vector<std::shared_ptr<InputHandler>> getHandlers();
+  vector<shared_ptr<InputHandler>> getHandlers();
 
   //
   // <Method>
@@ -71,7 +71,7 @@ public:
   // <Summary>
   //		Get the send queue
   //@return The Send Queue.
-  std::shared_ptr<ConcurrentQueue<Packet>> getSendQueue();
+  weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> getSendQueue();
 
   //
   // <Method>
@@ -87,31 +87,31 @@ public:
 private:
 
   //The receive thread
-  std::thread receiveThread; 
+  thread receiveThread; 
 
   //The Send Thread.
-  std::thread sendThread;
+  thread sendThread;
 
   // The internal socket
-  std::shared_ptr<Socket> mSocket;
+  shared_ptr<Socket> mSocket;
 
   // An Input Handler.
-  std::vector<std::shared_ptr<InputHandler>> mInputHandlers;
+  vector<shared_ptr<InputHandler>> mInputHandlers;
 
   // A Send Queue. We drain this queue and send back to the C++.
-  std::shared_ptr<ConcurrentQueue<Packet>> mSendQueue;
+  shared_ptr<ConcurrentQueue<shared_ptr<Packet>>> mSendQueue;
 
   // The mutex
-  std::mutex mMutex;
+  mutex mMutex;
 
   // Have we acknowledged.
-  std::atomic_bool mHasAcknowledged;
+  atomic_bool mHasAcknowledged;
 
   //The Condition variable has events.
-  std::condition_variable mAcknowledged;
+  condition_variable mAcknowledged;
 
   //We are running.
-  std::atomic_bool mIsRunning = false; 
+  atomic_bool mIsRunning = false; 
 
   //
   // <Method>

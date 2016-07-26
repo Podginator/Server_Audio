@@ -9,6 +9,7 @@
 #include "SongFileConverter.h"
 #include <atomic>
 
+using namespace std;
 
 /**
 * The AudioServer Handler
@@ -18,7 +19,7 @@ public:
 
   //Constructor, takes a ConcurrentQueue, which is often associated with 
   //the 
-  AudioServerHandler(std::weak_ptr<ConcurrentQueue<Packet>> conQue);
+  AudioServerHandler(weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> conQue);
  
   //
   // <Method> 
@@ -26,31 +27,31 @@ public:
   // <Summary> 
   //  return a Response Struct to send back.
   // @param sentMessage the Message we have been set.
-  void handlePacket(const Packet& sentMessage);
+  void handlePacket(const weak_ptr<Packet>& sentMessage);
 private: 
   
   // Is the current thread running
-  std::atomic_bool isRunning = false;
+  atomic_bool isRunning = false;
 
   // Is the read thread running
-  std::atomic_bool readThreadActive = false;
+  atomic_bool readThreadActive = false;
   
   // The Mutex.
-  std::mutex mMutex;
+  mutex mMutex;
 
   // Is this the only thread running.
-  std::condition_variable_any mIsOnly;
+  condition_variable_any mIsOnly;
   
   //The Concurrent Queue to drain from. 
-  std::weak_ptr<ConcurrentQueue<Packet>> mConQueue;
+  weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> mConQueue;
 
   // The File List of songs.
-  std::shared_ptr<FileList<Song>> fileList;
+  shared_ptr<FileList<Song>> fileList;
 
   // The File Parser thread. 
-  std::thread fileParserThread;
+  thread fileParserThread;
 
 
   //Request a file. 
-  void requestFile(std::shared_ptr<Song> fileName);
+  void requestFile(shared_ptr<Song> fileName);
 };

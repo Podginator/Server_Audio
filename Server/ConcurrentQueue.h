@@ -13,7 +13,7 @@ public:
 
   T pop() {
 
-    std::unique_lock<std::mutex> lk(mMutex);
+    unique_lock<mutex> lk(mMutex);
 
     while (mQueue.empty()) {
       mCondVar.wait(lk);
@@ -28,24 +28,31 @@ public:
 
   size_t size() {
     size_t res = 0;
-    std::unique_lock<std::mutex> lk(mMutex);
+    unique_lock<mutex> lk(mMutex);
     res = mQueue.size();
     lk.unlock();
     return res;
   }
 
   void push(const T& item) {
-    std::unique_lock<std::mutex> lk(mMutex);
+    unique_lock<mutex> lk(mMutex);
     mQueue.push(item);
     lk.unlock();
     mCondVar.notify_all();
   }
 
+
+  void clear() {
+    unique_lock<mutex> lk(mMutex);
+    mQueue.clear();
+    lk.unlock();
+  }
+
 private: 
-  std::queue<T> mQueue; 
+  queue<T> mQueue; 
 
-  std::mutex mMutex; 
+  mutex mMutex; 
 
-  std::condition_variable mCondVar;
+  condition_variable mCondVar;
 
 };

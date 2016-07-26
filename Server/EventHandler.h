@@ -11,7 +11,7 @@
 
 // The function that constitutes a listener. This will get the
 // Call back.
-std::function<void(const Event* const evt)> typedef Listener; 
+function<void(const Event* const evt)> typedef Listener; 
 
 /**
 * The Event Handler. 
@@ -43,9 +43,9 @@ public:
   // @param T
   // @param evt The event to send out. 
   template<typename T,
-    typename = std::enable_if < std::is_base_of<Event, T>::value >>
-  void addListener(std::function<void(const T* event)> listen) {
-  std::unique_lock<std::mutex> vectLock(listenerAdd, std::defer_lock);
+    typename = enable_if < is_base_of<Event, T>::value >>
+  void addListener(function<void(const T* event)> listen) {
+  unique_lock<mutex> vectLock(listenerAdd, defer_lock);
   vectLock.lock();
   //Cast the Void pointer to the correct type in the listener.
   auto listener = [=](const Event* const evt) {
@@ -83,15 +83,15 @@ private:
   void beginEventLoop();
  
   //The listeners
-  std::map<std::type_index, std::vector<Listener>> mListeners;
+  map<type_index, vector<Listener>> mListeners;
   //Lock variable. 
-  std::mutex mMutex;
+  mutex mMutex;
   // The lock around the listeners.
-  std::mutex listenerAdd;
+  mutex listenerAdd;
   //The Event Adding lock
-  std::mutex evtAdd; 
+  mutex evtAdd; 
   //The queue of events.
-  std::queue<Event*> mEventQueue;
+  queue<Event*> mEventQueue;
   //The Condition variable has events.
-  std::condition_variable mHasItems; 
+  condition_variable mHasItems; 
 };

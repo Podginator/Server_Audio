@@ -30,7 +30,7 @@ public:
 	//		Read the data from the Socket.
 	// @param  The Data retrieved from the server
 	//
-	int read(char * &data);
+	char* read(size_t& dataSize);
 
 	//
 	// <Method>

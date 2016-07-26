@@ -28,9 +28,9 @@ private:
 
 class FriendRequestEvent : public Event {
 public:
-  std::string from;
+  string from;
   
-  FriendRequestEvent(std::string from) : Event(EventType::USER_UPDATE, nullptr) {
+  FriendRequestEvent(string from) : Event(EventType::USER_UPDATE, nullptr) {
     this->from = from;
   }
 };

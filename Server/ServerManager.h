@@ -21,8 +21,8 @@ public:
 	//		Constructs the Server Manager.
 	// @param serPtr the Server Socket we want to listen on.
 	//
-  ServerManager(std::shared_ptr<ServerSocket>& serPtr, 
-    std::shared_ptr<SocketManagerFactory>);
+  ServerManager(shared_ptr<ServerSocket>& serPtr, 
+    shared_ptr<SocketManagerFactory>);
 
 	//Destructor.
   ~ServerManager();
@@ -40,9 +40,9 @@ public:
 
 private:
 	//The Server Socket we're listening on.
-  std::shared_ptr<ServerSocket> mServerSocket;
+  shared_ptr<ServerSocket> mServerSocket;
 
-  std::shared_ptr<SocketManagerFactory> mManagerFactory;
+  shared_ptr<SocketManagerFactory> mManagerFactory;
 
   //
   // <Method>
@@ -52,7 +52,7 @@ private:
   //   Return a unique pointer to the Socket that is created.
   // @return Pointer to a Socket.
   //
-  void acceptConnection(std::shared_ptr<Socket> socket);
+  void acceptConnection(shared_ptr<Socket> socket);
 
   //
   // <Method>

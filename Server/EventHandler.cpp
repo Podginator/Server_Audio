@@ -25,9 +25,9 @@ EventHandler* EventHandler::getInstance() {
 // @param evt The event to send out. 
 void EventHandler::addEvent(Event* evt) {
   //Lock guard the Mutex, Avoid calling the Listeners before we need to. 
-  std::lock_guard<std::mutex> lockGuard(mMutex);
+  lock_guard<mutex> lockGuard(mMutex);
   //also lock for adding events, as these collections aren't thread safe. 
-  std::unique_lock<std::mutex> vectLock(evtAdd, std::defer_lock);
+  unique_lock<mutex> vectLock(evtAdd, defer_lock);
   vectLock.lock();
   mEventQueue.push(evt);
   mHasItems.notify_all();
@@ -53,7 +53,7 @@ void removeListener(const Listener& listen) {
 //    Start the event loop.
 EventHandler::EventHandler() {
   //Begin the event loop.
-  std::thread thread(&EventHandler::beginEventLoop, this);
+  thread thread(&EventHandler::beginEventLoop, this);
   thread.detach();
 }
 
@@ -65,14 +65,14 @@ EventHandler::EventHandler() {
 //    Start the event loop.
 void EventHandler::beginEventLoop() {
   while (true) {
-    std::unique_lock<std::mutex> evtLock(mMutex, std::defer_lock);
+    unique_lock<mutex> evtLock(mMutex, defer_lock);
     evtLock.lock();
     //Wait until we have any 
     mHasItems.wait(evtLock, [&] {return mEventQueue.size() > 0; });
     Event* evt = mEventQueue.front();
     mEventQueue.pop();
 
-    std::lock_guard<std::mutex> lockGuard(listenerAdd);
+    lock_guard<mutex> lockGuard(listenerAdd);
     //Alert each listener
     for each (Listener listener in mListeners[typeid(*evt)]) {
       listener(evt);

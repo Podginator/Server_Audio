@@ -21,7 +21,7 @@ Socket::Socket(int socket, struct sockaddr_in& address) {
 //		Close
 //
 Socket::~Socket() {
-  std::cout << "Ending Socket" << std::endl;
+  cout << "Ending Socket" << endl;
 	close();
 }
 
@@ -30,28 +30,26 @@ Socket::~Socket() {
 //		Read
 // <Summary>
 //		Read the data from the Socket.
-// @param  The Data retrieved from the server
+// @param  The size of the data from the server.
 //
-int Socket::read(char* &data) {
+char* Socket::read(size_t& bytesRead) {
 	bool ok = true;
-	int totalBytes = 0;
+  char* buffer = nullptr;
   //Read a buffer. 
-  char* buffer = new char[2048];
-	int byteRead = recv(socketFileDesc, buffer, 2048, 0);
+  char intermediateBuf[2048];
+	bytesRead = recv(socketFileDesc, intermediateBuf, 2048, 0);
 
-	if (byteRead <= 0) {
+	if (bytesRead <= 0) {
 		ok = false;
-		totalBytes = 0;
+    bytesRead = 0;
 	}
 
 	if (ok) {
-    totalBytes = byteRead;
-    data = new char[totalBytes];
-    memcpy(data, buffer, totalBytes);
+    buffer = new char[bytesRead];
+    memcpy(buffer, intermediateBuf, bytesRead);
 	}
 
-  delete[] buffer;
-	return totalBytes;
+	return buffer;
 }
 
 //

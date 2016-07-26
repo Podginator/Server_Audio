@@ -49,7 +49,7 @@ public:
   Packet() : type(Type::NO_OPP), size(0), packetData() {};
 
   ~Packet() {
-    std::cout << "Deleted" << std::endl;
+    cout << "Deleted" << endl;
   }
 
   Packet(Type type, int size, byte* data) {
@@ -88,7 +88,7 @@ public:
   // <Summary> 
   //  return a Response Struct to send back.
   // @param sentMessage the Message we have been set.
-	virtual void handlePacket(const Packet& packet) = 0;
+	virtual void handlePacket(const weak_ptr<Packet>& packet) = 0;
 private:
   // What type this is listening for.
   Type mListenFor;

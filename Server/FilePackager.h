@@ -8,7 +8,7 @@ class FilePackager
 public:
 
   // Open the file with a string.
-  virtual bool openFile(const std::string& filePath) = 0;
+  virtual bool openFile(const string& filePath) = 0;
 
   // Open the file. 
   virtual bool openFile(FILE* file) = 0;

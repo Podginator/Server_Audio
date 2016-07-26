@@ -8,7 +8,7 @@
 // @param hostName the host name to connect to (Ie: IP-Port)
 // @param port the port to listen to
 //
-ServerSocket::ServerSocket(const std::string& hostName, int port) {
+ServerSocket::ServerSocket(const string& hostName, int port) {
 	mPort = port;
   address = hostName;
 }
@@ -23,7 +23,7 @@ ServerSocket::~ServerSocket() {}
 //   Return a unique pointer to the Socket that is created.
 // @return Pointer to a Socket.
 //
-std::shared_ptr<Socket> ServerSocket::acceptSocket() {
+shared_ptr<Socket> ServerSocket::acceptSocket() {
   struct sockaddr_in cliAddr;
   socklen_t cliLen = sizeof(cliAddr);
   SOCKET s =
@@ -31,7 +31,7 @@ std::shared_ptr<Socket> ServerSocket::acceptSocket() {
 
   if (s != SOCKET_ERROR) {
     printf("Client connected to the Server. ");
-    return std::make_shared<Socket>(s, cliAddr);
+    return make_shared<Socket>(s, cliAddr);
   }
 
   return nullptr;
@@ -70,7 +70,7 @@ bool ServerSocket::begin() {
 
     if (ok) {
       setupServerHints(hints);
-      if (getaddrinfo(address.c_str(), std::to_string(mPort).c_str(), &hints, &result)) {
+      if (getaddrinfo(address.c_str(), to_string(mPort).c_str(), &hints, &result)) {
         ok = false;
       }
     }
@@ -112,7 +112,7 @@ void ServerSocket::close() {
   int errNum = WSAGetLastError();
 
   if (errNum != 0) {
-    std::cout << "Server Socket closed due to error " << errNum << std::endl;
+    cout << "Server Socket closed due to error " << errNum << endl;
   }
 
   WSACleanup();

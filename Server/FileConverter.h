@@ -3,5 +3,5 @@
 template <class T> 
 class FileConverter {
 public :
-  virtual T getClassFromFile(const std::string& fileDir, const std::string& fileName) = 0;
+  virtual T getClassFromFile(const string& fileDir, const string& fileName) = 0;
 };

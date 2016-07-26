@@ -43,7 +43,7 @@ public:
   //  The Path to the file.
   //Return Bool: 
   //  The File has opened and been read correctly.
-  virtual bool openFile(const std::string& filePath);
+  virtual bool openFile(const string& filePath);
 
   //Name: OpenFile
   //  Open a file.

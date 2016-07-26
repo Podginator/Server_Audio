@@ -14,9 +14,9 @@ int main(int, char**)
 {
 
 
-	std::cout << "Server Started \n";
-  std::shared_ptr<ServerSocket> servSocket = std::make_shared<ServerSocket>("localhost", 29054);
-  std::shared_ptr<SocketManagerFactory> factManager = std::make_shared<AudioSocketManagerFactory>();
+	cout << "Server Started \n";
+  shared_ptr<ServerSocket> servSocket = make_shared<ServerSocket>("localhost", 29054);
+  shared_ptr<SocketManagerFactory> factManager = make_shared<AudioSocketManagerFactory>();
 	
   ServerManager manager(servSocket, factManager);
 	manager.listen();

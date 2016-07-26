@@ -41,7 +41,7 @@ size_t WavFilePackager::getTotalSize() {
 //  The Path to the file.
 //Return Bool: 
 //  The File has opened and been read correctly.
-bool WavFilePackager::openFile(const std::string& filePath) {
+bool WavFilePackager::openFile(const string& filePath) {
   FILE * file;
   fopen_s(&file, filePath.c_str(), "r");
   //Then open the file.
@@ -153,12 +153,12 @@ bool WavFilePackager::processWavFile(FILE* file, waveHeader& wavhdr, size_t& siz
 
   fread(header.chunk_id, sizeof(byte), 4, file);
 
-  if (std::strncmp(reinterpret_cast<char*>(header.chunk_id), "RIFF", 4) == 0) {
+  if (strncmp(reinterpret_cast<char*>(header.chunk_id), "RIFF", 4) == 0) {
     //So continue.
     //Read the chunksizes
     fread(&header.chunk_size, sizeof(DWORD), 1, file);
     fread(&header.format, sizeof(DWORD), 1, file);
-    if (std::strncmp(reinterpret_cast<char*>(header.format), "WAVE", 4) == 0) {
+    if (strncmp(reinterpret_cast<char*>(header.format), "WAVE", 4) == 0) {
       fread(&header.subchunk1_id, sizeof(DWORD), 1, file);
       fread(&header.subchunk1_size, sizeof(DWORD), 1, file);
       fread(&header.audio_format, sizeof(WORD), 1, file);

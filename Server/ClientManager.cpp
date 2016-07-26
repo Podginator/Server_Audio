@@ -10,9 +10,9 @@
 //		Constructs the Server Manager.
 // @param serPtr the Server Socket we want to listen on.
 //
-ClientManager::ClientManager(std::shared_ptr<Socket> socket) {
+ClientManager::ClientManager(shared_ptr<Socket> socket) {
   mSocket = socket;
-  mSendQueue = std::make_shared<ConcurrentQueue<Packet>>();
+  mSendQueue = make_shared<ConcurrentQueue<shared_ptr<Packet>>>();
 }
 
 //
@@ -23,8 +23,9 @@ ClientManager::ClientManager(std::shared_ptr<Socket> socket) {
 // @param serPtr the Server Socket we want to listen on.
 // @param queue The Queue to drain from. 
 //
-ClientManager::ClientManager(std::shared_ptr<Socket> socket,
-  std::shared_ptr<ConcurrentQueue<Packet>> queue) {
+
+ClientManager::ClientManager(shared_ptr<Socket> socket,
+  shared_ptr<ConcurrentQueue<shared_ptr<Packet>>> queue) {
   mSocket = socket;
   mSendQueue = queue;
 }
@@ -38,16 +39,16 @@ ClientManager::ClientManager(std::shared_ptr<Socket> socket,
 void ClientManager::start() {
   mIsRunning = true;
 
-  receiveThread = std::thread(&ClientManager::recvTask, this);
-  sendThread = std::thread(&ClientManager::sendTask, this);
+  receiveThread = thread(&ClientManager::recvTask, this);
+  sendThread = thread(&ClientManager::sendTask, this);
 
   receiveThread.join();
 
 
   // Send a closing flag. 
-  std::shared_ptr<Packet> packet = std::make_shared<Packet>(Type::CLOSE, 0, nullptr);
+  shared_ptr<Packet> packet = make_shared<Packet>(Type::CLOSE, 0, nullptr);
   //Stop The Concurrent Queue from blocking to end.
-  mSendQueue->push(Packet(Type::NO_OPP, 0, nullptr));
+  mSendQueue->push(make_shared<Packet>(Type::NO_OPP, 0, nullptr));
 
   sendThread.join();
 
@@ -59,7 +60,7 @@ void ClientManager::start() {
 
 //Destructor.
 ClientManager::~ClientManager() {
-  std::cout << "Deleted Client Manager" << std::endl; 
+  cout << "Deleted Client Manager" << endl; 
 }
 
 //
@@ -68,7 +69,7 @@ ClientManager::~ClientManager() {
 // <Summary>
 //		Adds a Listener to handle incoming responses.
 //@param handler the Handler we wish to add.
-void ClientManager::addListener(const std::shared_ptr<InputHandler>& handler) {
+void ClientManager::addListener(const shared_ptr<InputHandler>& handler) {
   mInputHandlers.push_back(handler);
 }
 
@@ -79,7 +80,7 @@ void ClientManager::addListener(const std::shared_ptr<InputHandler>& handler) {
 // <Summary>
 //		Get all the handlers
 //@return The Input Handlers.
-std::vector<std::shared_ptr<InputHandler>> ClientManager::getHandlers() {
+vector<shared_ptr<InputHandler>> ClientManager::getHandlers() {
   return mInputHandlers;
 }
 
@@ -89,7 +90,7 @@ std::vector<std::shared_ptr<InputHandler>> ClientManager::getHandlers() {
 // <Summary>
 //		Get the send queue
 //@return The Send Queue.
-std::shared_ptr<ConcurrentQueue<Packet>> ClientManager::getSendQueue() {
+weak_ptr<ConcurrentQueue<shared_ptr<Packet>>> ClientManager::getSendQueue() {
   return mSendQueue;
 }
 
@@ -119,13 +120,13 @@ void ClientManager::closeClient() {
 //    packets to the connected client.
 void ClientManager::sendTask() {
   while (mIsRunning) {
-    std::unique_lock<std::mutex> drainLock(mMutex);
+    unique_lock<mutex> drainLock(mMutex);
     auto item = mSendQueue->pop();
-    //mAcknowledged.wait(drainLock, [&] { return mHasAcknowledged.load(); });
+    mAcknowledged.wait(drainLock, [&] { return mHasAcknowledged.load(); });
     
     mHasAcknowledged.store(false);
     //Send the response to the server.
-    if ((item.packetData != nullptr && item.type != Type::NO_OPP)) {
+    if ((item->packetData != nullptr && item->type != Type::NO_OPP)) {
       
       //Convert Packet down to byte array. 
       size_t packetSize = sizeof(Packet);
@@ -133,7 +134,7 @@ void ClientManager::sendTask() {
       
       // Convert a Packet down to a char* buffer and 
       // Send to the client
-      memcpy(data, &item, packetSize);
+      memcpy(data, item.get(), packetSize);
 
       
       //Why.
@@ -156,17 +157,17 @@ void ClientManager::sendTask() {
 void ClientManager::recvTask() {
   while (mIsRunning) {
 
-    char* msg = nullptr;
-    size_t msgSize = mSocket->read(msg);
+    size_t msgSize = 0;
+    char* msg = mSocket->read(msgSize);
     if (msgSize > 0 && msg != nullptr) {
-      Packet packet = extractPacket(msg, msgSize);
+      shared_ptr<Packet> packet = extractPacket(msg, msgSize);
 
       //If the packet we've retrieved is a no-operation
       //Then we have a correct packet, or received junk.
-      if (packet.type != Type::NO_OPP) {
+      if (packet != nullptr && packet->type != Type::NO_OPP) {
         // If we've received an acknowledge, then 
         // Alert the send thread that we can continue.
-        if (packet.type == Type::ACKNOWLEDGE) {
+        if (packet->type == Type::ACKNOWLEDGE) {
           mHasAcknowledged.store(true);
           mAcknowledged.notify_all();
         }
@@ -174,7 +175,7 @@ void ClientManager::recvTask() {
           // Otherwise just iterate through the handles
           // That listen for this kind of packet.
           for each (auto handler in mInputHandlers) {
-            if (handler->listensFor(packet.type)) {
+            if (handler->listensFor(packet->type)) {
               handler->handlePacket(packet);
             }
           }

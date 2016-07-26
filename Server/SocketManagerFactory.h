@@ -12,5 +12,5 @@ class ServerManager;
 // Created when accepting an incoming connection from a Socket. 
 class SocketManagerFactory {
 public:
-  virtual std::shared_ptr<ClientManager> createSocketManager(std::shared_ptr<Socket> socket, ServerManager* servMan) = 0;
+  virtual shared_ptr<ClientManager> createSocketManager(shared_ptr<Socket> socket, ServerManager* servMan) = 0;
 };

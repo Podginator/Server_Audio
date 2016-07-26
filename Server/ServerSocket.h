@@ -15,7 +15,7 @@ private:
   //The port to connect on.
   int mPort;
   //The address we wish to connect to
-	std::string address;
+	string address;
   //The Socket File Description
 	int socketFileDesc;
 
@@ -37,7 +37,7 @@ public:
   // @param hostName the host name to connect to (Ie: IP-Port)
   // @param port the port to listen to
   //
-  ServerSocket(const std::string& hostName, int port);
+  ServerSocket(const string& hostName, int port);
 	
   //Destructor.
   ~ServerSocket();
@@ -49,7 +49,7 @@ public:
 	//   Return a unique pointer to the Socket that is created.
 	// @return Pointer to a Socket.
 	//
-  std::shared_ptr<Socket> acceptSocket();
+  shared_ptr<Socket> acceptSocket();
 
 	//
 	// <Method>

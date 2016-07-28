@@ -2,13 +2,13 @@
 
 //Event classes. We register listeners to a global Event Handler. 
 
-enum EventType {
+/*enum EventType {
   USER_UPDATE, USER_STATUS, SONG_ADDED
 };
 
 /**
 * The Event.
-*/
+
 class Event
 {
 public:
@@ -34,3 +34,4 @@ public:
     this->from = from;
   }
 };
+*/

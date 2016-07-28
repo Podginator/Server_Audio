@@ -9,12 +9,13 @@ enum Type {
   ACKNOWLEDGE = 1 << 1,
   TRACK = 1 << 2,
   AUDIO = 1 << 3,
-  HEADER = 1 <<4,
+  HEADER = 1 << 4,
   FILELIST = 1 << 5,
   FRIEND_REQ = 1 << 6,
   USER_UPDATE = 1 << 7,
+  EXIT = 1 << 8,
   First = INVALID,
-  Last = USER_UPDATE
+  Last = EXIT
 };
 
 //Expose bitwise operators.

@@ -52,7 +52,7 @@ bool ServerSocket::begin() {
   WSADATA wsaData;
   int err;
 
-  /* Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h */
+
   wVersionRequested = MAKEWORD(2, 2);
   err = WSAStartup(wVersionRequested, &wsaData);
 
@@ -61,7 +61,7 @@ bool ServerSocket::begin() {
   }
 
   if (ok) {
-    //TODO TCP OR UDP Or what? 
+
     socketFileDesc = socket(AF_INET, SOCK_STREAM, 0);
     //Check to see if we've failed.
     if (socketFileDesc < 0) {
@@ -112,7 +112,7 @@ void ServerSocket::close() {
   int errNum = WSAGetLastError();
 
   if (errNum != 0) {
-    cout << "Server Socket closed due to error " << errNum << endl;
+    cerr << "Server Socket closed due to error: " << errNum << endl;
   }
 
   WSACleanup();

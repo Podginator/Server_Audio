@@ -19,10 +19,10 @@ class FileList {
 public: 
 
   //Constructor
-  FileList(const string& fileLoc, const string& fileExtn, shared_ptr<FileConverter<T>> fileConvert) {
+  FileList(const string& fileLoc, const string& fileExtn, unique_ptr<FileConverter<T>> fileConvert) {
     mFileExtn = fileExtn;
     mFileLoc = fileLoc;
-    fileConverter = fileConvert;
+    fileConverter = std::move(fileConvert);
     populate();
   }
 
@@ -130,7 +130,7 @@ private:
 
   // Pointer to a file converter, takes the location of a file and 
   // converts it to the correct object. 
-  shared_ptr<FileConverter<T>> fileConverter;
+  unique_ptr<FileConverter<T>> fileConverter;
 
   // The Extension of the file. 
   string mFileExtn; 

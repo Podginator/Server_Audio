@@ -8,10 +8,10 @@
 //    Constructs the Server Manager.
 // @param serPtr the Server Socket we want to listen on.
 //
-ServerManager::ServerManager(shared_ptr<ServerSocket>& serPtr,
-  shared_ptr<ClientManagerFactory> socketFactory) {
-  mManagerFactory = socketFactory;
-  mServerSocket = serPtr;
+ServerManager::ServerManager(unique_ptr<ServerSocket>& serPtr,
+  unique_ptr<ClientManagerFactory>& socketFactory) {
+  mManagerFactory = std::move(socketFactory);
+  mServerSocket = std::move(serPtr);
   mServerSocket->begin();
 
 }

@@ -1,5 +1,5 @@
 #include "EventHandler.h"
-
+/**
 //
 //  <Member>
 //    Get Instance
@@ -81,3 +81,4 @@ void EventHandler::beginEventLoop() {
     evtLock.unlock();
   }
 }
+*/

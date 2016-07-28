@@ -49,7 +49,6 @@ ClientManager::~ClientManager() {
 
 // Add a Listener to handle incoming responses.
 //   handler : The handler we want to deal with 
-void addListener(const shared_ptr<InputHandler>& handler);
 void ClientManager::addListener(const shared_ptr<InputHandler>& handler) {
   mInputHandlers.push_back(handler);
 }

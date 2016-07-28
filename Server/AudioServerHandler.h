@@ -42,10 +42,10 @@ private:
   weak_ptr<ConcurrentQueue<Packet>> mConQueue;
 
   // The File List of songs.
-  shared_ptr<FileList<Song>> fileList;
+  unique_ptr<FileList<Song>> fileList;
 
 
   // Requst a song, chop it up and send it to te mConQueue
   //   fileName : The Song File we want to dissect.
-  void requestFile(shared_ptr<Song> songFile);
+  void requestFile(Song songFile);
 };

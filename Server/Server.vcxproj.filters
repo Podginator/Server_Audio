@@ -34,6 +34,18 @@
     <Filter Include="Header Files\File">
       <UniqueIdentifier>{a913f074-0283-44bc-af6e-bad5ae540ebc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Client">
+      <UniqueIdentifier>{3d0890de-9da1-4105-9841-0a0ee05cb82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Client\Handler">
+      <UniqueIdentifier>{5f5897c3-2846-43d1-95ea-042966617689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EventHandler">
+      <UniqueIdentifier>{938823ea-0123-4dd6-a6f1-0f87ff0dacb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\File">
+      <UniqueIdentifier>{16402088-bb76-48d1-a509-e8346f569167}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdadfx.h">
@@ -60,17 +72,11 @@
     <ClInclude Include="ConcurrentQueue.h">
       <Filter>Header Files\Concurrent Collection</Filter>
     </ClInclude>
-    <ClInclude Include="SocketManagerFactory.h">
-      <Filter>Header Files\Server</Filter>
-    </ClInclude>
     <ClInclude Include="InputHandler.h">
       <Filter>Header Files\Client\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="AudioServerHandler.h">
       <Filter>Header Files\Client\Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioSocketManagerFactory.h">
-      <Filter>Header Files\Server</Filter>
     </ClInclude>
     <ClInclude Include="Song.h">
       <Filter>Header Files\Model</Filter>
@@ -93,6 +99,12 @@
     <ClInclude Include="PacketExtracter.h">
       <Filter>Header Files\Client</Filter>
     </ClInclude>
+    <ClInclude Include="ClientManagerFactory.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioClientManagerFactory.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -107,9 +119,6 @@
     <ClCompile Include="ServerManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioServerHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EventHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -118,6 +127,12 @@
     </ClCompile>
     <ClCompile Include="WavFilePackager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioClientManagerFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioServerHandler.cpp">
+      <Filter>Source Files\Client\Handler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -5,16 +5,16 @@
 // Type Enum, Bit Flags as we want the handlers
 // To be able to handle a lot of them.
 enum Type {
-  NO_OPP = 0,
+  INVALID = 0,
   ACKNOWLEDGE = 1 << 1,
-  EXIT = 1 << 2,
+  TRACK = 1 << 2,
   AUDIO = 1 << 3,
-  FILELIST = 1 << 4,
-  TRACK = 1 << 5,
-  CLOSE = 1 << 6,
-  FRIEND = 1 << 7,
-  First = NO_OPP,
-  Last = FRIEND
+  HEADER = 1 <<4,
+  FILELIST = 1 << 5,
+  FRIEND_REQ = 1 << 6,
+  USER_UPDATE = 1 << 7,
+  First = INVALID,
+  Last = USER_UPDATE
 };
 
 //Expose bitwise operators.
@@ -46,11 +46,9 @@ public:
   //Byte Array, max length set to 1024.
   byte packetData[maxPacketSize];
 
-  Packet() : type(Type::NO_OPP), size(0), packetData() {};
+  Packet() : type(Type::INVALID), size(0), packetData() {};
 
-  ~Packet() {
-    cout << "Deleted Packet" << endl;
-  }
+  ~Packet() {}
 
   Packet(Type type, int size, byte* data) {
     this->type = type; 
@@ -79,7 +77,7 @@ public:
 
   // Returns True if Type & Listen for > 1
   bool listensFor(Type type) {
-    return (bool) (type & mListenFor);
+    return (type & mListenFor) != 0;
   }
 
   //

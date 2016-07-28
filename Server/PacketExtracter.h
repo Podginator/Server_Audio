@@ -4,7 +4,7 @@
 #include "InputHandler.h"
 
 // Extract the Packet. 
-// Error handling here. 
+// Handle Errors in case the packet is not true.
 extern Packet extractPacket(char* msg, const size_t& packetSize) {
   Packet packet;
   char* currPos = msg;
@@ -16,11 +16,9 @@ extern Packet extractPacket(char* msg, const size_t& packetSize) {
     memcpy(&type, msg, sizeof(Type));
     currPos = msg + sizeof(Type);
 
-
     //Ensure that we're not NO_OPP, and that we're less than or equal to the last val
-    //And that we're a power of 2 (Bitflag)
-    
-    if (type > Type::NO_OPP && type <= Type::Last && !(type & (type - 1))) {
+    //And that we're a power of 2 (Bitflag)    
+    if (type > Type::INVALID && type <= Type::Last && !(type & (type - 1))) {
       // we can continue. 
       int size;
       

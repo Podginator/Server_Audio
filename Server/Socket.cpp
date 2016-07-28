@@ -58,7 +58,7 @@ int Socket::send(byte* data, size_t dataSize) {
 	int returnVal = -1;
 
 	if (data) {
-		int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), dataSize, 0);
+		int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), static_cast<int>(dataSize), 0);
 	}
 
 	return returnVal;

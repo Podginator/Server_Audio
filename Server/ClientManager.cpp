@@ -4,38 +4,25 @@
 #include "PacketExtracter.h"
 
 //
-// <Method>
-//		Constructor
-// <Summary>
-//		Constructs the Server Manager.
-// @param serPtr the Server Socket we want to listen on.
-//
-ClientManager::ClientManager(shared_ptr<Socket> socket) {
-  mSocket = socket;
+// Constructor
+//  serPtr : The Server Socket we want to listen on.
+ClientManager::ClientManager(unique_ptr<Socket> socket) {
+  mSocket = std::move(socket);
   mSendQueue = make_shared<ConcurrentQueue<Packet>>();
 }
 
 //
-// <Method>
-//		Constructor
-// <Summary>
-//		Constructs the Server Manager.
-// @param serPtr the Server Socket we want to listen on.
-// @param queue The Queue to drain from. 
-//
-
-ClientManager::ClientManager(shared_ptr<Socket> socket,
+// Constructor
+//  serPtr : The Server Socket we want to listen on.
+//  queue  : The Queue we are sending from.
+ClientManager::ClientManager(unique_ptr<Socket> socket,
   shared_ptr<ConcurrentQueue<Packet>> queue) {
-  mSocket = socket;
+  mSocket = std::move(socket);
   mSendQueue = queue;
 }
 
-//
-// <Method>
-//		Start
-// <Summary>
-//		Starts the threads.
-//
+// Start 
+//    Start the Client.
 void ClientManager::start() {
   mIsRunning = true;
   mHasAcknowledged.store(true);
@@ -46,7 +33,7 @@ void ClientManager::start() {
   receiveThread.join();
 
   //Unblock the send queue, and then join.
-  mSendQueue->push(Packet(Type::NO_OPP, 0, nullptr));
+  mSendQueue->push(Packet(Type::INVALID, 0, nullptr));
   sendThread.join();
 
 
@@ -60,47 +47,25 @@ ClientManager::~ClientManager() {
   cout << "Deleted Client Manager" << endl; 
 }
 
-//
-// <Method>
-//		addListener
-// <Summary>
-//		Adds a Listener to handle incoming responses.
-//@param handler the Handler we wish to add.
+// Add a Listener to handle incoming responses.
+//   handler : The handler we want to deal with 
+void addListener(const shared_ptr<InputHandler>& handler);
 void ClientManager::addListener(const shared_ptr<InputHandler>& handler) {
   mInputHandlers.push_back(handler);
 }
 
-
-//
-// <Method>
-//		getHandlers
-// <Summary>
-//		Get all the handlers
-//@return The Input Handlers.
+// Return all the handlers associated with this Client.
 vector<shared_ptr<InputHandler>> ClientManager::getHandlers() {
   return mInputHandlers;
 }
 
-//
-// <Method>
-//		getSendQueue
-// <Summary>
-//		Get the send queue
-//@return The Send Queue.
+// Returns the Send queue
 weak_ptr<ConcurrentQueue<Packet>> ClientManager::getSendQueue() {
   return mSendQueue;
 }
 
 
-//
-// <Method>
-//		CloseCleitn
-// <Summary>
-//		Close the Client.
-//    Joins the Threads. 
-//    Sets the boolean.
-//    Close the socket.
-//@return The Send Queue.
+// Close this client.
 void ClientManager::closeClient() {
   mIsRunning = false; 
 
@@ -109,12 +74,8 @@ void ClientManager::closeClient() {
 }
 
 
-//
-// <Method>
-//		sendTask
-// <Summary>
-//		Drains the Queue and sends any 
-//    packets to the connected client.
+// Send Task.
+//  Send the Packets in the queue.
 void ClientManager::sendTask() {
   while (mIsRunning) {
     unique_lock<mutex> drainLock(mMutex);
@@ -123,7 +84,7 @@ void ClientManager::sendTask() {
     
     mHasAcknowledged.store(false);
     //Send the response to the server.
-    if ((item.type != Type::NO_OPP)) {
+    if ((item.type != Type::INVALID)) {
       
       //Convert Packet down to byte array. 
       size_t packetSize = sizeof(Packet);
@@ -133,24 +94,14 @@ void ClientManager::sendTask() {
       // Send to the client
       memcpy(data, &item, packetSize);
 
-      
-      //Why.
       mSocket->send(data, packetSize);
       delete[] data;
-
-
-      
     }
   }
 }
 
-//
-// <Method>
-//		recvTask
-// <Summary>
-//		Receive any incoming messages.
-//    Sends them to the input handlers for 
-//    Processing.
+// Receive Task
+//  Receive the Packets in the queue
 void ClientManager::recvTask() {
   while (mIsRunning) {
 
@@ -165,7 +116,7 @@ void ClientManager::recvTask() {
 
       //If the packet we've retrieved is a no-operation
       //Then we have a correct packet, or received junk.
-      if (packet.type != Type::NO_OPP) {
+      if (packet.type != Type::INVALID) {
         // If we've received an acknowledge, then 
         // Alert the send thread that we can continue.
         if (packet.type == Type::ACKNOWLEDGE) {

@@ -26,8 +26,8 @@ public:
     DWORD subchunk2_size; // 4 Bytes Little Endian.
   };
 
-
-  //CTOR: Create an instance of a file with which we're wanting to disect. 
+  // Constructor
+  // Create an instance of a file with which we're wanting to disect. 
   WavFilePackager();
 
 

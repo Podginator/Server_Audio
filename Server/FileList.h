@@ -10,6 +10,10 @@
 #include <iterator>
 #include "FileConverter.h"
 
+
+// The File List.
+// Designed to return the Files as a list of Pair: T - File Path.
+// Takes a file converter. From this we create the classes. 
 template <class T> 
 class FileList {
 public: 
@@ -64,8 +68,8 @@ public:
   }
 
   // Get index of the T
-  size_t indexOf(const T& obj) {
-    size_t res, i = -1; 
+  int indexOf(const T& obj) {
+    int res, i = -1; 
     for (pair<T, string> objects : mFileMap) {
       i++; 
       if (objects.first == obj) {

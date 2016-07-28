@@ -10,78 +10,44 @@
 
 //
 // The Manager Class to handle a single instance of 
-// of a Socket
+// of a Socket.
 //
 class ClientManager {
 
 public:
 
   //
-  // <Method>
-  //		Constructor
-  // <Summary>
-  //		Constructs the Server Manager.
-  // @param serPtr the Server Socket we want to listen on.
-  //
-  ClientManager(shared_ptr<Socket> socket);
+  // Constructor
+  //  serPtr : The Server Socket we want to listen on.
+  ClientManager(unique_ptr<Socket> socket);
 
   //
-  // <Method>
-  //		Constructor
-  // <Summary>
-  //		Constructs the Server Manager.
-  // @param serPtr the Server Socket we want to listen on.
-  // @param queue The Queue to drain from. 
-  //
-  ClientManager(shared_ptr<Socket> socket,
+  // Constructor
+  //  serPtr : The Server Socket we want to listen on.
+  //  queue  : The Queue we are sending from.
+  ClientManager(unique_ptr<Socket> socket,
     shared_ptr<ConcurrentQueue<Packet>> queue);
 
 
   //Destructor.
   ~ClientManager();
 
-  //
-  // <Method>
-  //		Start
-  // <Summary>
-  //		Starts the threads.
-  //
+  // Start 
+  //    Start the Client.
   void ClientManager::start();
 
-  //
-  // <Method>
-  //		addListener
-  // <Summary>
-  //		Adds a Listener to handle incoming responses.
-  //@param handler the Handler we wish to add.
+  // Add a Listener to handle incoming responses.
+  //   handler : The handler we want to deal with 
   void addListener(const shared_ptr<InputHandler>& handler);
 
 
-  //
-  // <Method>
-  //		getHandlers
-  // <Summary>
-  //		Get all the handlers
-  //@return The Input Handlers.
+  // Returns the Vector of the Input Handlers.
   vector<shared_ptr<InputHandler>> getHandlers();
 
-  //
-  // <Method>
-  //		getSendQueue
-  // <Summary>
-  //		Get the send queue
-  //@return The Send Queue.
+  // Returns a pointer to the send queue.
   weak_ptr<ConcurrentQueue<Packet>> getSendQueue();
 
-  //
-  // <Method>
-  //		CloseCleitn
-  // <Summary>
-  //		Close the Client.
-  //    Joins the Threads. 
-  //    Sets the boolean.
-  //    Close the socket.
-  //@return The Send Queue.
+  // Close the client, perform clean up.
   void closeClient();
 
 private:
@@ -93,7 +59,7 @@ private:
   thread sendThread;
 
   // The internal socket
-  shared_ptr<Socket> mSocket;
+  unique_ptr<Socket> mSocket;
 
   // An Input Handler.
   vector<shared_ptr<InputHandler>> mInputHandlers;
@@ -113,20 +79,11 @@ private:
   //We are running.
   atomic_bool mIsRunning = false; 
 
-  //
-  // <Method>
-  //		sendTask
-  // <Summary>
-  //		Drains the Queue and sends any 
-  //    packets to the connected client.
+  // Send Task.
+  //  Send the Packets in the queue.
   void sendTask();
 
-  //
-  // <Method>
-  //		recvTask
-  // <Summary>
-  //		Receive any incoming messages.
-  //    Sends them to the input handlers for 
-  //    Processing.
+  // Receive Task
+  //  Receive the Packets in the queue
   void recvTask();
 };

@@ -23,7 +23,7 @@ ServerSocket::~ServerSocket() {}
 //   Return a unique pointer to the Socket that is created.
 // @return Pointer to a Socket.
 //
-shared_ptr<Socket> ServerSocket::acceptSocket() {
+unique_ptr<Socket> ServerSocket::acceptSocket() {
   struct sockaddr_in cliAddr;
   socklen_t cliLen = sizeof(cliAddr);
   SOCKET s =
@@ -31,7 +31,7 @@ shared_ptr<Socket> ServerSocket::acceptSocket() {
 
   if (s != SOCKET_ERROR) {
     printf("Client connected to the Server. ");
-    return make_shared<Socket>(s, cliAddr);
+    return make_unique<Socket>(s, cliAddr);
   }
 
   return nullptr;

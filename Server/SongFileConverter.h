@@ -5,13 +5,18 @@
 #include "WavFilePackager.h"
 #include "stdadfx.h"
 
+// The File Converter
+// From File To Song.
 class SongFileConverter : public FileConverter<Song> {
 public: 
 
+  // Constructor. Takes a Wav File Pacakger to enable 
+  // Us to get the header from the Wav File.
   SongFileConverter() {
     packager = WavFilePackager();
   }
 
+  // Returns the Class from the file. 
   virtual Song getClassFromFile(const string& fileDir, const string& fileName) {
     WavFilePackager::waveHeader header;
     size_t bufferSize = 44;
@@ -49,5 +54,6 @@ public:
 
 
 private:
+  // The Pacakger
   WavFilePackager packager;
 };

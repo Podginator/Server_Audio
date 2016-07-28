@@ -114,13 +114,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AudioServerHandler.h" />
-    <ClInclude Include="AudioSocketManagerFactory.h" />
+    <ClInclude Include="AudioClientManagerFactory.h" />
     <ClInclude Include="FileList.h" />
     <ClInclude Include="FilePackager.h" />
     <ClInclude Include="FileConverter.h" />
     <ClInclude Include="Song.h" />
     <ClInclude Include="PacketExtracter.h" />
-    <ClInclude Include="SocketManagerFactory.h" />
+    <ClInclude Include="ClientManagerFactory.h" />
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="ConcurrentQueue.h" />
     <ClInclude Include="Event.h" />
@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioServerHandler.cpp" />
+    <ClCompile Include="AudioClientManagerFactory.cpp" />
     <ClCompile Include="ClientManager.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="main.cpp" />

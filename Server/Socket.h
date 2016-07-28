@@ -8,14 +8,8 @@
 class Socket {
 public:
 
-	//
-	// <Method>
-	//		Constructor
-	// <Summary>
-	//		Read the data from the Socket.
-	//
-	// @param  The Data retrieved from the server
-	//
+	// Constructor: 
+  // Tales a spclet 
 	Socket(int socketfd, struct sockaddr_in& address);
 
 	//

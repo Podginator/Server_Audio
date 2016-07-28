@@ -6,18 +6,16 @@
 /**
 * The Server Instance that Listens to
 * Incoming Connections.
-*
-* We only need one of these, therefore it's defined
-* As a singleton.
 */
 class ServerSocket {
 private:
+
   //The port to connect on.
   int mPort;
   //The address we wish to connect to
 	string address;
   //The Socket File Description
-	int socketFileDesc;
+	SOCKET socketFileDesc;
 
 
   // <Method>
@@ -49,7 +47,7 @@ public:
 	//   Return a unique pointer to the Socket that is created.
 	// @return Pointer to a Socket.
 	//
-  shared_ptr<Socket> acceptSocket();
+  unique_ptr<Socket> acceptSocket();
 
 	//
 	// <Method>

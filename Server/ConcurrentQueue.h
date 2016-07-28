@@ -11,6 +11,8 @@ class ConcurrentQueue {
 public: 
 
 
+  // Pop from the queue, use a condition variable 
+  // To ensure that we block when we're empty.
   T pop() {
 
     unique_lock<mutex> lk(mMutex);
@@ -26,6 +28,8 @@ public:
     return res; 
   }
 
+  // Return the size of the queue, lock 
+  // for thread safety before accessing the queue.
   size_t size() {
     size_t res = 0;
     unique_lock<mutex> lk(mMutex);
@@ -34,6 +38,9 @@ public:
     return res;
   }
 
+  // Push an item to the queue
+  // Block before pushing to the queue.
+  // Then notify the Queue that we've pushed.
   void push(const T& item) {
     unique_lock<mutex> lk(mMutex);
     mQueue.push(item);
@@ -42,6 +49,7 @@ public:
   }
 
 
+  // Clear the queue.
   void clear() {
     unique_lock<mutex> lk(mMutex);
     mQueue.clear();
@@ -49,10 +57,13 @@ public:
   }
 
 private: 
+  // The inner queue
   queue<T> mQueue; 
 
+  // The mutex we lock against/
   mutex mMutex; 
 
+  // The coniditon variable to wait for.
   condition_variable mCondVar;
 
 };

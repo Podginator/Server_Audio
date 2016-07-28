@@ -9,7 +9,7 @@
 // @param serPtr the Server Socket we want to listen on.
 //
 ServerManager::ServerManager(shared_ptr<ServerSocket>& serPtr,
-  shared_ptr<SocketManagerFactory> socketFactory) {
+  shared_ptr<ClientManagerFactory> socketFactory) {
   mManagerFactory = socketFactory;
   mServerSocket = serPtr;
   mServerSocket->begin();
@@ -43,10 +43,9 @@ void ServerManager::listen() {
 //   Return a unique pointer to the Socket that is created.
 // @return Pointer to a Socket.
 //
-void ServerManager::acceptConnection(shared_ptr<Socket> socket) {
-  shared_ptr<ClientManager> clientManager = mManagerFactory->createSocketManager(socket, this);
+void ServerManager::acceptConnection(unique_ptr<Socket> socket) {
+  unique_ptr<ClientManager> clientManager = mManagerFactory->createClientManager(move(socket));
   clientManager->start();
-  socket = nullptr;
 }
 
 //
@@ -58,11 +57,10 @@ void ServerManager::acceptConnection(shared_ptr<Socket> socket) {
 //
 void ServerManager::getConnections() {
   while (true) {
-    shared_ptr<Socket> socket = mServerSocket->acceptSocket();
+    unique_ptr<Socket> socket = mServerSocket->acceptSocket();
     if ((socket != nullptr) && (socket->validate())) {
       cout << "Connected! \n";
-      thread([=] { acceptConnection(socket); }).detach();
+      thread([&] { acceptConnection(move(socket)); }).detach();
     }
-    socket = nullptr;
   }
 }

@@ -13,12 +13,12 @@ int main(int, char**)
 {
 
 
-	cout << "Server Started \n";
+  cout << "Server Started \n";
   shared_ptr<ServerSocket> servSocket = make_shared<ServerSocket>("localhost", 29054);
   shared_ptr<ClientManagerFactory> factManager = make_shared<AudioClientManagerFactory>();
-	
+  
   ServerManager manager(servSocket, factManager);
-	manager.listen();
+  manager.listen();
 
   while (1) {}
 }

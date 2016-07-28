@@ -13,15 +13,15 @@ private:
   //The port to connect on.
   int mPort;
   //The address we wish to connect to
-	string address;
+  string address;
   //The Socket File Description
-	SOCKET socketFileDesc;
+  SOCKET socketFileDesc;
 
 
   // <Method>
-  //		setupServerAddressStruct
+  //    setupServerAddressStruct
   // <Summary>
-  //		Sets up pthe Sockaddr_in 
+  //    Sets up pthe Sockaddr_in 
   // @param ref The Socket_addr_in to modify.
   //
   void setupServerHints(addrinfo& ref);
@@ -29,32 +29,32 @@ private:
 public:
 
   // <Method>
-  //		Constructor
+  //    Constructor
   // <Summary>
-  //		Constructs the Server Objects
+  //    Constructs the Server Objects
   // @param hostName the host name to connect to (Ie: IP-Port)
   // @param port the port to listen to
   //
   ServerSocket(const string& hostName, int port);
-	
+  
   //Destructor.
   ~ServerSocket();
 
-	// <Method>
-	//  accept
-	// <Summary>
-	//   Accept a connection that is attempting to connection
-	//   Return a unique pointer to the Socket that is created.
-	// @return Pointer to a Socket.
-	//
+  // <Method>
+  //  accept
+  // <Summary>
+  //   Accept a connection that is attempting to connection
+  //   Return a unique pointer to the Socket that is created.
+  // @return Pointer to a Socket.
+  //
   unique_ptr<Socket> acceptSocket();
 
-	//
-	// <Method>
-	// 	Begin Listening
-	// <Summary>
-	//   Starts listening on the Socket.
-	//
+  //
+  // <Method>
+  //   Begin Listening
+  // <Summary>
+  //   Starts listening on the Socket.
+  //
   bool begin();
 
   // 

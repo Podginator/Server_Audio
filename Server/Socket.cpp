@@ -3,38 +3,38 @@
 
 //
 // <Method>
-//		Constructor
+//    Constructor
 // <Summary>
-//	Read the data from the Socket.
+//  Read the data from the Socket.
 //
 // @param  The Data retrieved from the server
 //
 Socket::Socket(int socket, struct sockaddr_in& address) {
-	socketFileDesc = socket;
-	socketAddr = address;
+  socketFileDesc = socket;
+  socketAddr = address;
 }
 
 //
 // <Method>
-//		Destructor
+//    Destructor
 // <Summary>
-//		Close
+//    Close
 //
 Socket::~Socket() {
   cout << "Ending Socket" << endl;
-	close();
+  close();
 }
 
 //
 // <Method>
-//		Read
+//    Read
 // <Summary>
-//		Read the data from the Socket.
+//    Read the data from the Socket.
 // @param  The size of the data from the server.
 //
 
 size_t Socket::read(char* buffer, const size_t& bytesRead) {
-	bool ok = true;  
+  bool ok = true;  
   size_t res = 0;
   int retrieved = recv(socketFileDesc, buffer, bytesRead, 0);
 
@@ -44,30 +44,30 @@ size_t Socket::read(char* buffer, const size_t& bytesRead) {
 
   //Error checking, if res = 0 close? 
 
-	return res;
+  return res;
 }
 
 //
 // <Method>
-//		Send data
+//    Send data
 // <Summary>
-//		Send the data to the socket
+//    Send the data to the socket
 // @param  data to send
 //
 int Socket::send(byte* data, size_t dataSize) {
-	int returnVal = -1;
+  int returnVal = -1;
 
-	if (data) {
-		int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), static_cast<int>(dataSize), 0);
-	}
+  if (data) {
+    int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), static_cast<int>(dataSize), 0);
+  }
 
-	return returnVal;
+  return returnVal;
 }
 
 //
 // <Method>
-//		Close
+//    Close
 // <Summary>
-//		Close the socket
+//    Close the socket
 //
 void Socket::close() {}

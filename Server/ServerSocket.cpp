@@ -2,14 +2,14 @@
 #include <errno.h>
 
 // <Method>
-//		Constructor
+//    Constructor
 // <Summary>
-//		Constructs the Server Objects
+//    Constructs the Server Objects
 // @param hostName the host name to connect to (Ie: IP-Port)
 // @param port the port to listen to
 //
 ServerSocket::ServerSocket(const string& hostName, int port) {
-	mPort = port;
+  mPort = port;
   address = hostName;
 }
 
@@ -39,7 +39,7 @@ unique_ptr<Socket> ServerSocket::acceptSocket() {
 
 //
 // <Method>
-// 	Begin Listening
+//   Begin Listening
 // <Summary>
 //   Starts listening on the Socket.
 // @return True if successful, false otherwise.
@@ -124,9 +124,9 @@ void ServerSocket::close() {
 }
 
 // <Method>
-//		setupServerAddressStruct
+//    setupServerAddressStruct
 // <Summary>
-//		Sets up pthe Sockaddr_in 
+//    Sets up pthe Sockaddr_in 
 // @param ref The Socket_addr_in to modify.
 //
 void ServerSocket::setupServerHints(addrinfo& hints) {

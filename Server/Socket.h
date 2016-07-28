@@ -8,55 +8,55 @@
 class Socket {
 public:
 
-	// Constructor: 
+  // Constructor: 
   // Tales a spclet 
-	Socket(int socketfd, struct sockaddr_in& address);
+  Socket(int socketfd, struct sockaddr_in& address);
 
-	//
-	// Method:    Destructor
-	//
+  //
+  // Method:    Destructor
+  //
   ~Socket();
 
-	//
-	// <Method>
-	//		Read
-	// <Summary>
-	//		Read the data from the Socket.
-	// @param  The Data retrieved from the server
-	//
-	size_t read(char* buffer, const size_t& dataSize);
+  //
+  // <Method>
+  //    Read
+  // <Summary>
+  //    Read the data from the Socket.
+  // @param  The Data retrieved from the server
+  //
+  size_t read(char* buffer, const size_t& dataSize);
 
-	//
-	// <Method>
-	//		Send data
-	// <Summary>
-	//		Send the data to the socket
-	// @param  data to send
-	//
-	int send(byte* data, size_t dataSize);
+  //
+  // <Method>
+  //    Send data
+  // <Summary>
+  //    Send the data to the socket
+  // @param  data to send
+  //
+  int send(byte* data, size_t dataSize);
 
-	//
-	// <Method>
-	//		Close
-	// <Summary>
-	//		Close the socket
-	//
+  //
+  // <Method>
+  //    Close
+  // <Summary>
+  //    Close the socket
+  //
   void close();
 
   //
   // <Method>
-  //		Validate
+  //    Validate
   // <Summary>
-  //		Check the Socket is correct.
+  //    Check the Socket is correct.
   //
   boolean validate() {
     return socketFileDesc > -1; 
   }
 
 private:
-	//The Socket file descriptor
-	int socketFileDesc;
-	//Struct of SocAddr_in.
-	sockaddr_in socketAddr;
+  //The Socket file descriptor
+  int socketFileDesc;
+  //Struct of SocAddr_in.
+  sockaddr_in socketAddr;
 
 };

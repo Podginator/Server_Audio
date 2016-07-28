@@ -3,9 +3,9 @@
 #include "Event.h"
 //
 // <Method>
-//		Constructor
+//    Constructor
 // <Summary>
-//		Constructs the Server Manager.
+//    Constructs the Server Manager.
 // @param serPtr the Server Socket we want to listen on.
 //
 ServerManager::ServerManager(shared_ptr<ServerSocket>& serPtr,
@@ -23,7 +23,7 @@ ServerManager::~ServerManager() {
 
 //
 // <Method>
-//		listen
+//    listen
 // <Summary>
 //   Accept a connection that is attempting to connection
 //   Return a unique pointer to the Socket that is created.
@@ -37,7 +37,7 @@ void ServerManager::listen() {
 
 //
 // <Method>
-//		acceptConnection
+//    acceptConnection
 // <Summary>
 //   Accept a connection that is attempting to connection
 //   Return a unique pointer to the Socket that is created.
@@ -50,7 +50,7 @@ void ServerManager::acceptConnection(unique_ptr<Socket> socket) {
 
 //
 // <Method>
-//		getConnections
+//    getConnections
 // <Summary>
 //   Listen to the Server Socket, accepting any 
 // @return Pointer to a Socket.

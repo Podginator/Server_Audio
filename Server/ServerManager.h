@@ -12,22 +12,22 @@ class ServerManager {
 
 public:
 
-	// Constructor 
+  // Constructor 
   //  serPtr : The Server socket we wish to listen on
   //  factory : The factory to create a Client Manager on.
   ServerManager(shared_ptr<ServerSocket>& serPtr, 
     shared_ptr<ClientManagerFactory> factory);
 
-	//Destructor.
+  //Destructor.
   ~ServerManager();
 
-	// Listen to the server. 
+  // Listen to the server. 
   // Accept connections.ClientManagerFactory
   void listen();
 
 
 private:
-	//The Server Socket we're listening on.
+  //The Server Socket we're listening on.
   shared_ptr<ServerSocket> mServerSocket;
 
   // The Pointer to the facotory to client from. 

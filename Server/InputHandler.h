@@ -86,7 +86,7 @@ public:
   // <Summary> 
   //  return a Response Struct to send back.
   // @param sentMessage the Message we have been set.
-	virtual void handlePacket(const Packet& packet) = 0;
+  virtual void handlePacket(const Packet& packet) = 0;
 private:
   // What type this is listening for.
   Type mListenFor;

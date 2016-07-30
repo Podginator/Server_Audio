@@ -97,7 +97,7 @@ void ClientManager::sendTask() {
         mSocket->send(data, packetSize);
       } catch (exception& e) {
         mIsRunning.store(false);
-        cerr << "Error when attempting to send on socket. " << e.what() << endl;
+        cout << "Error when attempting to send on socket. " << e.what() << endl;
       }
       delete[] data;
     }
@@ -118,7 +118,7 @@ void ClientManager::recvTask() {
       msgSize = mSocket->read(buffer, recvSize);
     } catch (exception& e) {
       mIsRunning.store(false);
-      cerr << e.what() << endl;
+      cout << e.what() << endl;
     }
 
     if ((mIsRunning.load()) && (msgSize > 0) && (buffer != nullptr)) {

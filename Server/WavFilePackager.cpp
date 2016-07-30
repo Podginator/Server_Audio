@@ -4,11 +4,8 @@
 
 
 //CTOR: Create an instance of a file with which we're wanting to disect. 
-WavFilePackager::WavFilePackager() {
-  mHeader = { 0 };
-  mTotalSize = 0;
-  mExtracted = 0;
-}
+WavFilePackager::WavFilePackager()
+  : mHeader(), mTotalSize(0), mExtracted(0) {}
 
 //Name: isFileOpen
 //  Is the file open
@@ -97,7 +94,6 @@ bool WavFilePackager::closeFile() {
 //Return : Size_T
 //   The size of the written buffer.
 size_t WavFilePackager::getNextChunk(byte* buffer, size_t bufferSize) {
-  int err = 0;
   size_t res = 0;
   // Calculate how much we have to read.
   size_t calculatedRead = (mExtracted + bufferSize > mTotalSize) ? mTotalSize - mExtracted : bufferSize;
@@ -106,7 +102,8 @@ size_t WavFilePackager::getNextChunk(byte* buffer, size_t bufferSize) {
   //seek from extracted location.
   mOpenFile.seekg(mExtracted, std::ios::beg);
 
-  if (err == 0) {
+  //Check that we haven't failed (failbit)
+  if ((mOpenFile.rdstate() & std::ifstream::failbit) != 0) {
     //Then extract from the file the next chunk. 
     mOpenFile.read(reinterpret_cast<char*>(buffer), calculatedRead);
 

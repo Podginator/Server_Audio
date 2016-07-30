@@ -10,7 +10,7 @@
 // @param  The Data retrieved from the server
 //
 Socket::Socket(SOCKET socket, struct sockaddr_in& mAddress) {
-  socketFileDesc = socket;
+  mSocketFileDesc = socket;
   socketAddr = mAddress;
 
   // Attempt to set up the wsa.
@@ -31,6 +31,7 @@ Socket::Socket(SOCKET socket, struct sockaddr_in& mAddress) {
 //
 Socket::~Socket() {
   cout << "Ending Socket" << endl;
+  WSACleanup();
   close();
 }
 
@@ -43,9 +44,7 @@ Socket::~Socket() {
 //
 
 size_t Socket::read(char* buffer, const size_t& bytesRead) {
-  bool ok = true;  
-  size_t res = 0;
-  int retrieved = ::recv(socketFileDesc, buffer, bytesRead, 0);
+  int retrieved = ::recv(mSocketFileDesc, buffer, bytesRead, 0);
 
   if (retrieved == SOCKET_ERROR) {
     std::string err("Socket error while reading: " + WSAGetLastError());
@@ -66,7 +65,7 @@ int Socket::send(byte* data, size_t dataSize) {
   int returnVal = -1;
 
   if (data) {
-    int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), static_cast<int>(dataSize), 0);
+    returnVal = ::send(mSocketFileDesc, reinterpret_cast<char*>(data), static_cast<int>(dataSize), 0);
   }
 
   if (returnVal == SOCKET_ERROR) {
@@ -84,6 +83,5 @@ int Socket::send(byte* data, size_t dataSize) {
 //    Close the socket
 //
 void Socket::close() {
-  WSACleanup();
-  closesocket(socketFileDesc);
+  closesocket(mSocketFileDesc);
 }

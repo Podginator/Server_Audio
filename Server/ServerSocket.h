@@ -2,6 +2,7 @@
 
 #include "stdadfx.h"
 #include "Socket.h"
+#include <atomic>
 
 /**
 * The Server Instance that Listens to
@@ -15,8 +16,7 @@ private:
   //The address we wish to connect to
   string mAddress;
   //The Socket File Description
-  SOCKET socketFileDesc;
-
+  SOCKET mSocketFileDesc;
 
   // <Method>
   //    setupServerAddressStruct

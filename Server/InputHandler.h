@@ -13,9 +13,7 @@ public:
   //Constructor.
   //Can call with either 1 Type Ie: InputHandler(Type::Audio)
   //Or can call with multiple, IE InputHandler(Type::Audio & Type::FileList)
-  InputHandler(Type listenFor) {
-    mListenFor = listenFor;
-  }
+  explicit InputHandler(Type listenFor) : mListenFor(listenFor) {}
 
   // Returns True if Type & Listen for > 1
   bool listensFor(Type type) {

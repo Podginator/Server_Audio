@@ -18,11 +18,10 @@ int main(int, char**)
   try {
     ServerManager manager(servSocket, factManager);
     manager.listen();
-  }
-  catch (exception e) {
-    cerr << "Cannot start server manager: " << e.what() << endl;
-  }
 
-
-  while (1) {}
+    while (1) {}
+  }
+  catch (exception& e) {
+    cout << "Cannot start server manager: " << e.what() << endl;
+  }
 }

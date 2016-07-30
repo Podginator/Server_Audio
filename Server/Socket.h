@@ -65,12 +65,12 @@ public:
   //    Check the Socket is correct.
   //
   boolean validate() {
-    return socketFileDesc > -1; 
+    return mSocketFileDesc != 0; 
   }
 
 private:
   //The Socket file descriptor
-  SOCKET socketFileDesc;
+  SOCKET mSocketFileDesc;
   //Struct of SocAddr_in.
   sockaddr_in socketAddr;
 

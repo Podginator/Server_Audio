@@ -9,7 +9,7 @@
 // @param port the port to listen to
 //
 ServerSocket::ServerSocket(const string& hostName, int port)
- : mPort(port), mAddress(hostName) {
+  : mPort(port), mAddress(hostName), mSocketFileDesc(0) {
   // Attempt to set up the wsa.
   WORD wVersionRequested;
   WSADATA wsaData;
@@ -22,7 +22,7 @@ ServerSocket::ServerSocket(const string& hostName, int port)
 
 // On destruction ensure we call WSA Cleanup.
 ServerSocket::~ServerSocket() {
-  WSACleanup();
+  close();
 }
 
 // <Method>
@@ -36,7 +36,7 @@ unique_ptr<Socket> ServerSocket::acceptSocket() {
   struct sockaddr_in cliAddr;
   socklen_t cliLen = sizeof(cliAddr);
   SOCKET s =
-    accept(socketFileDesc, (sockaddr*)&cliAddr, &cliLen);
+    accept(mSocketFileDesc, (sockaddr*)&cliAddr, &cliLen);
 
   if (s != SOCKET_ERROR) {
     cout << "Client connected to the Server. " << endl;
@@ -57,14 +57,11 @@ bool ServerSocket::begin() {
   bool ok = true;
   struct addrinfo *result = NULL;
   struct addrinfo hints;
-  int err;
   
-
   if (ok) {
-
-    socketFileDesc = socket(AF_INET, SOCK_STREAM, 0);
+    mSocketFileDesc = socket(AF_INET, SOCK_STREAM, 0);
     //Check to see if we've failed.
-    if (socketFileDesc < 0) {
+    if (mSocketFileDesc == INVALID_SOCKET) {
       ok = false;
     }
 
@@ -77,7 +74,7 @@ bool ServerSocket::begin() {
 
     if (ok) {
 
-      if (::bind(socketFileDesc, result->ai_addr, (int)result->ai_addrlen) < 0) {
+      if (::bind(mSocketFileDesc, result->ai_addr, (int)result->ai_addrlen) < 0) {
         ok = false;
       }
 
@@ -88,15 +85,11 @@ bool ServerSocket::begin() {
   //If we've successfully set up our server, then listen
   //on it, otherwise close.
   if (ok) {
-    int res = listen(socketFileDesc, SOMAXCONN);
+    int res = listen(mSocketFileDesc, SOMAXCONN);
 
     if (res == SOCKET_ERROR) {
       ok = false;
     }
-  }
-
-  if (!ok) {
-    close();
   }
 
   return ok;
@@ -112,14 +105,14 @@ void ServerSocket::close() {
   int errNum = WSAGetLastError();
 
   if (errNum != 0) {
-    cerr << "Server Socket closed due to error: " << errNum << endl;
+    cout << "Server Socket closed due to error: " << errNum << endl;
   }
 
   WSACleanup();
 
-  if (socketFileDesc >= 0) {
-    //::close(socketFileDesc);
-    socketFileDesc = -1;
+  if (mSocketFileDesc != 0) {
+    closesocket(mSocketFileDesc);
+    mSocketFileDesc = 0;
   }
 }
 

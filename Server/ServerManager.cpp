@@ -66,5 +66,11 @@ void ServerManager::getConnections() {
       cout << "Connected! \n";
       thread([&] { acceptConnection(move(socket)); }).detach();
     }
+
+    int errNo = WSAGetLastError();
+    if (errNo != 0 && errNo != WSAEINTR) {
+      break;
+    }
+
   }
 }

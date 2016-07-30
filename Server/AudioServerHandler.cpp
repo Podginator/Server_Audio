@@ -44,7 +44,6 @@ void AudioServerHandler::handlePacket(const Packet& sentMessage) {
     //Package off and send back.
     thread([&] {
       size_t songSize = sizeof(Song);
-      size_t maxBufferSize = songSize * fileList->size();
 
       byte* byteArray = new byte[Packet::maxPacketSize];
       byte* pointer = byteArray;

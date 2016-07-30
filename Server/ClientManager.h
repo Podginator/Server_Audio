@@ -19,7 +19,7 @@ public:
   //
   // Constructor
   //  serPtr : The Server Socket we want to listen on.
-  ClientManager(unique_ptr<Socket> socket);
+  explicit ClientManager(unique_ptr<Socket> socket);
 
   //
   // Constructor

@@ -19,10 +19,8 @@ class FileList {
 public: 
 
   //Constructor
-  FileList(const string& fileLoc, const string& fileExtn, unique_ptr<FileConverter<T>> fileConvert) {
-    mFileExtn = fileExtn;
-    mFileLoc = fileLoc;
-    fileConverter = std::move(fileConvert);
+  FileList(const string& fileLoc, const string& fileExtn, unique_ptr<FileConverter<T>> fileConvert) 
+    : mFileExtn(fileExtn), mFileLoc(fileLoc), fileConverter(move(fileConvert)) {
     populate();
   }
 
@@ -34,7 +32,7 @@ public:
   //get File Name Ie The actual files name.
   string getFileName(int i) {
     if (i > mFileMap.size()) {
-      // Throw
+      throw out_of_range("Argument out of range.");
     }
     
     string fileName = nullptr;
@@ -61,7 +59,7 @@ public:
   //Get the Full File Path at this index. 
   string getFullFilePath(int i) {
     if (i > mFileMap.size()) {
-      // Throw
+      throw out_of_range("Argument out of range.");
     }
 
     return filePair.second();

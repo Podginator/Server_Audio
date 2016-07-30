@@ -10,20 +10,14 @@
 class SongFileConverter : public FileConverter<Song> {
 public: 
 
-  // Constructor. Takes a Wav File Pacakger to enable 
-  // Us to get the header from the Wav File.
-  SongFileConverter() {
-    packager = WavFilePackager();
-  }
-
   // Returns the Class from the file. 
   virtual bool getClassFromFile(const string& fileDir, const string& fileName, Song& song) {
     WavFilePackager::waveHeader header;
+    WavFilePackager packager;
     size_t bufferSize = 44;
     byte* buffer = new byte[bufferSize];
-    bool ok = true;
 
-    ok = packager.openFile(fileDir + '\\' + fileName);
+    bool ok = packager.openFile(fileDir + '\\' + fileName);
     if (ok && packager.isFileOpen()) {
       packager.getHeader(buffer, bufferSize);
       memcpy(&header, buffer, bufferSize);
@@ -54,9 +48,4 @@ public:
 
     return ok;
   }
-
-
-private:
-  // The Pacakger
-  WavFilePackager packager;
 };

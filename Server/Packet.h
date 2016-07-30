@@ -48,10 +48,7 @@ public:
 
   Packet() : type(Type::INVALID), size(0), packetData() {};
 
-  Packet(Type type, int size, byte* data) {
-    this->type = type;
-    this->size = size;
-
+  Packet(Type type, int size, byte* data) : type(type), size(size) {
     if (data != nullptr) {
       std::copy(data, data + size, packetData);
     }

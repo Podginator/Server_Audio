@@ -19,7 +19,7 @@ public:
 
   //Constructor
   // conQue: Weak_Ptr to a ConcurrentQueue of Packets. This is where we'll send to.
-  AudioServerHandler(weak_ptr<ConcurrentQueue<Packet>> conQue);
+  explicit AudioServerHandler(weak_ptr<ConcurrentQueue<Packet>> conQue);
  
   //Handle the Packet we have sent 
   //  sentMessage: The Packet we wish to process.  

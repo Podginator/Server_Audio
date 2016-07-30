@@ -10,12 +10,27 @@ public:
 
   // Constructor: 
   // Tales a spclet 
-  Socket(int socketfd, struct sockaddr_in& address);
+  Socket(SOCKET socketfd, struct sockaddr_in& mAddress);
 
   //
   // Method:    Destructor
   //
   ~Socket();
+
+  //Copy constructor.
+  // Ensure that we cannot copy this class elsewhere, as it is 
+  // a noncopyable resource (A socket.)
+  Socket(const Socket& other) = delete;
+
+  //Move Constructor 
+  // We don't have many resources that need to be freed etc. 
+  // So we can rely on the compiler here.
+  Socket(Socket&& other) = default;
+
+  //Move Operator.
+  // We don't have many resources that need to be freed etc. 
+  // So we can rely on the compiler here.
+  Socket& operator=(Socket&&) & = default;
 
   //
   // <Method>
@@ -55,7 +70,7 @@ public:
 
 private:
   //The Socket file descriptor
-  int socketFileDesc;
+  SOCKET socketFileDesc;
   //Struct of SocAddr_in.
   sockaddr_in socketAddr;
 

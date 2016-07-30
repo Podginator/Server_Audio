@@ -8,13 +8,22 @@
 // @param hostName the host name to connect to (Ie: IP-Port)
 // @param port the port to listen to
 //
-ServerSocket::ServerSocket(const string& hostName, int port) {
-  mPort = port;
-  address = hostName;
+ServerSocket::ServerSocket(const string& hostName, int port)
+ : mPort(port), mAddress(hostName) {
+  // Attempt to set up the wsa.
+  WORD wVersionRequested;
+  WSADATA wsaData;
+  wVersionRequested = MAKEWORD(2, 2);
+  int err = WSAStartup(wVersionRequested, &wsaData);
+  if (err != 0) {
+    throw runtime_error("Error starting server socket. Error Number: " + WSAGetLastError());
+  }
 }
 
-//Destructor.
-ServerSocket::~ServerSocket() {}
+// On destruction ensure we call WSA Cleanup.
+ServerSocket::~ServerSocket() {
+  WSACleanup();
+}
 
 // <Method>
 //  accept
@@ -48,17 +57,8 @@ bool ServerSocket::begin() {
   bool ok = true;
   struct addrinfo *result = NULL;
   struct addrinfo hints;
-  WORD wVersionRequested;
-  WSADATA wsaData;
   int err;
-
-
-  wVersionRequested = MAKEWORD(2, 2);
-  err = WSAStartup(wVersionRequested, &wsaData);
-
-  if (err != 0) {
-    ok = false; 
-  }
+  
 
   if (ok) {
 
@@ -70,7 +70,7 @@ bool ServerSocket::begin() {
 
     if (ok) {
       setupServerHints(hints);
-      if (getaddrinfo(address.c_str(), to_string(mPort).c_str(), &hints, &result)) {
+      if (getaddrinfo(mAddress.c_str(), to_string(mPort).c_str(), &hints, &result)) {
         ok = false;
       }
     }

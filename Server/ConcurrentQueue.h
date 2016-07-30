@@ -10,7 +10,6 @@ template <typename T>
 class ConcurrentQueue {
 public: 
 
-
   // Pop from the queue, use a condition variable 
   // To ensure that we block when we're empty.
   T pop() {

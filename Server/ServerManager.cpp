@@ -1,6 +1,7 @@
 #include "ServerManager.h"
 #include "EventHandler.h"
 #include "Event.h"
+#include <exception>
 //
 // <Method>
 //    Constructor
@@ -13,8 +14,8 @@ ServerManager::ServerManager(unique_ptr<ServerSocket>& serPtr,
   mManagerFactory = move(socketFactory);
   mServerSocket = move(serPtr);
   // This 
-  if (mServerSocket->begin()) {
-    throw;
+  if (!mServerSocket->begin()) {
+    throw exception("Cannot start server");
   }
 
 }

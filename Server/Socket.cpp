@@ -9,9 +9,18 @@
 //
 // @param  The Data retrieved from the server
 //
-Socket::Socket(int socket, struct sockaddr_in& address) {
+Socket::Socket(SOCKET socket, struct sockaddr_in& mAddress) {
   socketFileDesc = socket;
-  socketAddr = address;
+  socketAddr = mAddress;
+
+  // Attempt to set up the wsa.
+  WORD wVersionRequested;
+  WSADATA wsaData;
+  wVersionRequested = MAKEWORD(2, 2);
+  int err = WSAStartup(wVersionRequested, &wsaData);
+  if (err != 0) {
+    throw runtime_error("Error starting server socket. Error Number: " + WSAGetLastError());
+  }
 }
 
 //
@@ -36,15 +45,14 @@ Socket::~Socket() {
 size_t Socket::read(char* buffer, const size_t& bytesRead) {
   bool ok = true;  
   size_t res = 0;
-  int retrieved = recv(socketFileDesc, buffer, bytesRead, 0);
+  int retrieved = ::recv(socketFileDesc, buffer, bytesRead, 0);
 
-  if (retrieved > 0) {
-    res = static_cast<size_t>(retrieved);
+  if (retrieved == SOCKET_ERROR) {
+    std::string err("Socket error while reading: " + WSAGetLastError());
+    throw runtime_error(err.c_str());
+  } else if (retrieved > 0) {
+    return static_cast<size_t>(retrieved);
   }
-
-  //Error checking, if res = 0 close? 
-
-  return res;
 }
 
 //
@@ -61,6 +69,11 @@ int Socket::send(byte* data, size_t dataSize) {
     int returnVal = ::send(socketFileDesc, reinterpret_cast<char*>(data), static_cast<int>(dataSize), 0);
   }
 
+  if (returnVal == SOCKET_ERROR) {
+    std::string err("Socket error while sending: " + WSAGetLastError());
+    throw runtime_error(err.c_str());
+  }
+
   return returnVal;
 }
 
@@ -70,4 +83,7 @@ int Socket::send(byte* data, size_t dataSize) {
 // <Summary>
 //    Close the socket
 //
-void Socket::close() {}
+void Socket::close() {
+  WSACleanup();
+  closesocket(socketFileDesc);
+}

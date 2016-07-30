@@ -13,7 +13,7 @@ private:
   //The port to connect on.
   int mPort;
   //The address we wish to connect to
-  string address;
+  string mAddress;
   //The Socket File Description
   SOCKET socketFileDesc;
 
@@ -36,9 +36,27 @@ public:
   // @param port the port to listen to
   //
   ServerSocket(const string& hostName, int port);
-  
-  //Destructor.
+
+  // Destructor:
+  //  Calls WSACleanup(). 
+  //  Is called on Exception from Constructor
+  //  And 
   ~ServerSocket();
+
+  //Copy constructor.
+  // Ensure that we cannot copy this class elsewhere, as it is 
+  // a noncopyable resource (A socket.)
+  ServerSocket(const ServerSocket& other) = delete;
+
+  //Move Constructor 
+  // We don't have many resources that need to be freed etc. 
+  // So we can rely on the compiler here.
+  ServerSocket(ServerSocket&& other) = default;
+
+  //Move Operator.
+  // We don't have many resources that need to be freed etc. 
+  // So we can rely on the compiler here.
+  ServerSocket& operator=(ServerSocket&&) & = default;
 
   // <Method>
   //  accept

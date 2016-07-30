@@ -93,7 +93,12 @@ void ClientManager::sendTask() {
       // Send to the client
       memcpy(data, &item, packetSize);
 
-      mSocket->send(data, packetSize);
+      try {
+        mSocket->send(data, packetSize);
+      } catch (exception& e) {
+        mIsRunning.store(false);
+        cerr << "Error when attempting to send on socket. " << e.what() << endl;
+      }
       delete[] data;
     }
   }
@@ -108,8 +113,15 @@ void ClientManager::recvTask() {
     size_t msgSize = 0;
     size_t recvSize = sizeof(Packet);
     char* buffer = new char[recvSize];
-    msgSize =  mSocket->read(buffer, recvSize);
-    if (msgSize > 0 && buffer != nullptr) {
+    
+    try {
+      msgSize = mSocket->read(buffer, recvSize);
+    } catch (exception& e) {
+      mIsRunning.store(false);
+      cerr << e.what() << endl;
+    }
+
+    if ((mIsRunning.load()) && (msgSize > 0) && (buffer != nullptr)) {
       Packet packet = extractPacket(buffer, msgSize);
 
       //If the packet we've retrieved is a no-operation

@@ -118,6 +118,7 @@
     <ClInclude Include="FileList.h" />
     <ClInclude Include="FilePackager.h" />
     <ClInclude Include="FileConverter.h" />
+    <ClInclude Include="Packet.h" />
     <ClInclude Include="Song.h" />
     <ClInclude Include="PacketExtracter.h" />
     <ClInclude Include="ClientManagerFactory.h" />

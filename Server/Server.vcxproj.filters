@@ -60,9 +60,6 @@
     <ClInclude Include="ClientManager.h">
       <Filter>Header Files\Client</Filter>
     </ClInclude>
-    <ClInclude Include="Socket.h">
-      <Filter>Header Files\Client</Filter>
-    </ClInclude>
     <ClInclude Include="ServerSocket.h">
       <Filter>Header Files\Server</Filter>
     </ClInclude>
@@ -104,6 +101,12 @@
     </ClInclude>
     <ClInclude Include="AudioClientManagerFactory.h">
       <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>Header Files\Client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

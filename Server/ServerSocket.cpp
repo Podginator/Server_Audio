@@ -30,7 +30,7 @@ unique_ptr<Socket> ServerSocket::acceptSocket() {
     accept(socketFileDesc, (sockaddr*)&cliAddr, &cliLen);
 
   if (s != SOCKET_ERROR) {
-    printf("Client connected to the Server. ");
+    cout << "Client connected to the Server. " << endl;
     return make_unique<Socket>(s, cliAddr);
   }
 

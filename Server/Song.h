@@ -15,7 +15,22 @@ struct Song {
   // The length of the song in seconds.
   int SongLength; 
 
+  // Constructor. 
   Song() {};
+
+  Song(const std::string& song, const std::string& artist, int len) {
+
+    // Illegal Argument Exception.
+    if ((song.size() > 64) || (artist.size() > 64)) {
+      throw; 
+    }
+
+    strncpy_s(SongName, song.c_str(), song.size());
+    strncpy_s(ArtistName, artist.c_str(), artist.size());
+
+    SongLength = len;
+
+  }
 
   ~Song() {}
 
@@ -28,7 +43,7 @@ struct Song {
 
   Song(Song&& other) {
     memmove_s(ArtistName, 64, other.ArtistName, 64);
-    memmove_s(SongName, 64, other.ArtistName, 64);
+    memmove_s(SongName, 64, other.SongName, 64);
     SongLength = other.SongLength;
   }
 
@@ -44,7 +59,7 @@ struct Song {
 
   Song & operator= (Song &&other) {
     memmove_s(ArtistName, 64, other.ArtistName, 64);
-    memmove_s(SongName, 64, other.ArtistName, 64);
+    memmove_s(SongName, 64, other.SongName, 64);
     SongLength = other.SongLength;
 
     return *this;

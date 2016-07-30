@@ -102,8 +102,12 @@ public:
       do {
         if (!(fileDir.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
           string fileName(fileDir.cFileName);
-          T file = fileConverter->getClassFromFile(mFileLoc, fileName);
-          mFileMap.push_back(pair<T, string>( file, mFileLoc + fileName));
+          T typeClass;
+          bool file = fileConverter->getClassFromFile(mFileLoc, fileName, typeClass);
+
+          if (file) {
+            mFileMap.push_back(pair<T, string>(typeClass, mFileLoc + fileName));
+          }
         }
       } while (::FindNextFile(hFind, &fileDir));
       

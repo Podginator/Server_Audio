@@ -104,7 +104,6 @@ void ClientManager::sendTask() {
 void ClientManager::recvTask() {
   while (mIsRunning) {
 
-
     //Attempt to retrieve a packet.
     size_t msgSize = 0;
     size_t recvSize = sizeof(Packet);

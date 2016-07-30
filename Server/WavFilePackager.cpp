@@ -83,10 +83,10 @@ bool WavFilePackager::closeFile() {
   if (mOpenFile != nullptr) {
     // We have closed if the error is not 0.
     closed = fclose(mOpenFile) == 0;
+    mOpenFile = nullptr;
   }
 
-  mHeader = { 0 };
-
+  //mHeader = waveHeader();
   return closed;
 }
 
@@ -178,9 +178,14 @@ bool WavFilePackager::processWavFile(FILE* file, waveHeader& wavhdr, size_t& siz
     ok = false;
   }
 
-  wavhdr = header;
-  //The total size of the data in this WAV File. We will request it in chunks.
-  size = header.subchunk2_size;
+  if (ok) {
+    wavhdr = header;
+    //The total size of the data in this WAV File. We will request it in chunks.
+    size = header.subchunk2_size;
+  } else {
+    wavhdr = { 0 };
+    size = 0;
+  }
 
   return ok;
 }

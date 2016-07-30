@@ -6,5 +6,5 @@ template <class T>
 class FileConverter {
 public :
   // Get the class from the file name.
-  virtual T getClassFromFile(const string& fileDir, const string& fileName) = 0;
+  virtual bool getClassFromFile(const string& fileDir, const string& fileName, T& file) = 0;
 };

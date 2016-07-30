@@ -42,7 +42,7 @@ void AudioServerHandler::handlePacket(const Packet& sentMessage) {
   case Type::FILELIST:
 
     //Package off and send back.
-    thread([=] {
+    thread([&] {
       size_t songSize = sizeof(Song);
       size_t maxBufferSize = songSize * fileList->size();
 

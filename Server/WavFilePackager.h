@@ -2,6 +2,9 @@
 
 #include "stdadfx.h"
 #include "FilePackager.h"
+#include <iostream> 
+#include <fstream>
+
 
 // Class that packages files into buffers.
 class WavFilePackager :  public FilePackager
@@ -51,7 +54,7 @@ public:
   //  The File we want to open.
   //Return : Bool
   //  Successfully opened a file.
-  virtual bool openFile(FILE* file);
+  virtual bool openFile(ifstream& file);
 
   //Name: getTotalSize
   //  get the size of the file.
@@ -91,13 +94,14 @@ private:
   waveHeader mHeader;
 
   //The open file.
-  FILE* mOpenFile; 
+  ifstream mOpenFile; 
 
   // The size of the file. 
   size_t mTotalSize; 
 
   // The size of the amount extracted.
   size_t mExtracted; 
+
 
   //Name: Process the Wav File
   //  Process the wav file.
@@ -107,6 +111,6 @@ private:
   //  Process the heaver
   //Param :  Size_T size 
   //   size of the buffer..
-  bool processWavFile(FILE* file, waveHeader& wavhdr, size_t& size);
+  bool processWavFile(ifstream& file, waveHeader& wavhdr, size_t& size);
 
 };

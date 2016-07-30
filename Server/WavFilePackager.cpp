@@ -6,7 +6,6 @@
 //CTOR: Create an instance of a file with which we're wanting to disect. 
 WavFilePackager::WavFilePackager() {
   mHeader = { 0 };
-  mOpenFile = nullptr;
   mTotalSize = 0;
   mExtracted = 0;
 }
@@ -16,7 +15,7 @@ WavFilePackager::WavFilePackager() {
 //Return: bool
 //  True if file open.
 bool WavFilePackager::isFileOpen() {
-  return mOpenFile != nullptr;
+  return mOpenFile.is_open();
 }
 
 //Name: isFileComplete
@@ -42,8 +41,8 @@ size_t WavFilePackager::getTotalSize() {
 //Return Bool: 
 //  The File has opened and been read correctly.
 bool WavFilePackager::openFile(const string& filePath) {
-  FILE * file;
-  fopen_s(&file, filePath.c_str(), "r");
+  ifstream file(filePath, ios::binary);
+
   //Then open the file.
   return openFile(file);
 }
@@ -54,21 +53,21 @@ bool WavFilePackager::openFile(const string& filePath) {
 //  The File we want to open.
 //Return : Bool
 //  Successfully opened a file.
-bool WavFilePackager::openFile(FILE* file) {
+bool WavFilePackager::openFile(ifstream& file) {
   bool isOpen = false; 
 
   // Close the currently open file.
-  if (mOpenFile) {
+  if (mOpenFile.is_open()) {
     closeFile();
   }
 
   // Reset the Size and the total extracted. 
   mExtracted = 0;
-  mOpenFile = file;
+  mOpenFile = move(file);
 
 
   //Then process the wav file. 
-  isOpen = processWavFile(file, mHeader, mTotalSize);
+  isOpen = processWavFile(mOpenFile, mHeader, mTotalSize);
   mExtracted = sizeof(waveHeader);
 
   return isOpen;
@@ -80,10 +79,9 @@ bool WavFilePackager::openFile(FILE* file) {
 //  Return whether the file has been closed.
 bool WavFilePackager::closeFile() {
   bool closed = false;
-  if (mOpenFile != nullptr) {
-    // We have closed if the error is not 0.
-    closed = fclose(mOpenFile) == 0;
-    mOpenFile = nullptr;
+ 
+  if (mOpenFile.is_open()) {
+    mOpenFile.close();
   }
 
   //mHeader = waveHeader();
@@ -105,13 +103,13 @@ size_t WavFilePackager::getNextChunk(byte* buffer, size_t bufferSize) {
   size_t calculatedRead = (mExtracted + bufferSize > mTotalSize) ? mTotalSize - mExtracted : bufferSize;
   // Calculate the amount of buffer we need to use. 
   
-  //Fseek from extracted location.
-  err = fseek(mOpenFile, static_cast<long>(mExtracted), SEEK_SET);
-
+  //seek from extracted location.
+  mOpenFile.seekg(mExtracted, std::ios::beg);
 
   if (err == 0) {
     //Then extract from the file the next chunk. 
-    fread(buffer, bufferSize, 1, mOpenFile);
+    mOpenFile.read(reinterpret_cast<char*>(buffer), calculatedRead);
+
     //if (amtRead > 0) {
       mExtracted += bufferSize;
       res += bufferSize;
@@ -134,6 +132,8 @@ size_t WavFilePackager::getHeader(byte* buffer, size_t bufferSize) {
   size_t read = bufferSize >= sizeof(waveHeader) ? sizeof(waveHeader) : bufferSize;
 
   //Then copy the header into the buffer.
+  mOpenFile.read(reinterpret_cast<char*>(buffer), read);
+
   memcpy(buffer, &mHeader, read);
 
   return read;
@@ -147,28 +147,28 @@ size_t WavFilePackager::getHeader(byte* buffer, size_t bufferSize) {
 //  Process the heaver
 //Param :  Size_T size 
 //   size of the buffer..
-bool WavFilePackager::processWavFile(FILE* file, waveHeader& wavhdr, size_t& size) {
+bool WavFilePackager::processWavFile(ifstream& file, waveHeader& wavhdr, size_t& size) {
   bool ok = true;
   waveHeader header = { 0 };
 
-  fread(header.chunk_id, sizeof(byte), 4, file);
+  file.read((char*)&header.chunk_id, sizeof(byte) * 4);
 
   if (strncmp(reinterpret_cast<char*>(header.chunk_id), "RIFF", 4) == 0) {
     //So continue.
     //Read the chunksizes
-    fread(&header.chunk_size, sizeof(DWORD), 1, file);
-    fread(&header.format, sizeof(DWORD), 1, file);
+    file.read((char*)&header.chunk_size, sizeof(DWORD));
+    file.read((char*)&header.format, sizeof(DWORD));
     if (strncmp(reinterpret_cast<char*>(header.format), "WAVE", 4) == 0) {
-      fread(&header.subchunk1_id, sizeof(DWORD), 1, file);
-      fread(&header.subchunk1_size, sizeof(DWORD), 1, file);
-      fread(&header.audio_format, sizeof(WORD), 1, file);
-      fread(&header.num_channels, sizeof(WORD), 1, file);
-      fread(&header.sample_rate, sizeof(byte), 4, file);
-      fread(&header.byte_rate, sizeof(DWORD), 1, file);
-      fread(&header.block_align, sizeof(WORD), 1, file);
-      fread(&header.bits_per_sample, sizeof(WORD), 1, file);
-      fread(&header.subchunk2_id, sizeof(byte), 4, file);
-      fread(&header.subchunk2_size, sizeof(byte), 4, file);
+      file.read((char*)&header.subchunk1_id, sizeof(DWORD));
+      file.read((char*)&header.subchunk1_size, sizeof(DWORD));
+      file.read((char*)&header.audio_format, sizeof(WORD));
+      file.read((char*)&header.num_channels, sizeof(WORD));
+      file.read((char*)&header.sample_rate, sizeof(byte) * 4);
+      file.read((char*)&header.byte_rate, sizeof(DWORD));
+      file.read((char*)&header.block_align, sizeof(WORD));
+      file.read((char*)&header.bits_per_sample, sizeof(WORD));
+      file.read((char*)&header.subchunk2_id, sizeof(byte) * 4);
+      file.read((char*)&header.subchunk2_size, sizeof(byte) * 4);
     }
     else {
       ok = false;

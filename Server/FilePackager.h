@@ -11,7 +11,7 @@ public:
   virtual bool openFile(const string& filePath) = 0;
 
   // Open the file. 
-  virtual bool openFile(FILE* file) = 0;
+  virtual bool openFile(ifstream& file) = 0;
 
   // Is the file open.
   virtual bool isFileOpen() = 0;

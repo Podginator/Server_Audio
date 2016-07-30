@@ -10,9 +10,12 @@
 //
 ServerManager::ServerManager(unique_ptr<ServerSocket>& serPtr,
   unique_ptr<ClientManagerFactory>& socketFactory) {
-  mManagerFactory = std::move(socketFactory);
-  mServerSocket = std::move(serPtr);
-  mServerSocket->begin();
+  mManagerFactory = move(socketFactory);
+  mServerSocket = move(serPtr);
+  // This 
+  if (mServerSocket->begin()) {
+    throw;
+  }
 
 }
 

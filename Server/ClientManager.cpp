@@ -75,7 +75,6 @@ void ClientManager::closeClient() {
 // Send Task.
 //  Send the Packets in the queue.
 void ClientManager::sendTask() {
-  int i = 0;
   while (mIsRunning) {
     unique_lock<mutex> drainLock(mMutex);
     auto item = mSendQueue->pop();

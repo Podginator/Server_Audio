@@ -25,7 +25,6 @@ ClientManager::ClientManager(unique_ptr<Socket> socket,
 //    Start the Client.
 void ClientManager::start() {
   mIsRunning = true;
-  mHasAcknowledged.store(true);
 
   receiveThread = thread(&ClientManager::recvTask, this);
   sendThread = thread(&ClientManager::sendTask, this);
@@ -76,29 +75,30 @@ void ClientManager::closeClient() {
 // Send Task.
 //  Send the Packets in the queue.
 void ClientManager::sendTask() {
+  int i = 0;
   while (mIsRunning) {
     unique_lock<mutex> drainLock(mMutex);
     auto item = mSendQueue->pop();
-    mAcknowledged.wait(drainLock, [&] { return mHasAcknowledged.load(); });
-    
-    mHasAcknowledged.store(false);
     //Send the response to the server.
     if ((item.type != Type::INVALID)) {
       
       //Convert Packet down to byte array. 
-      size_t packetSize = sizeof(Packet);
+      // There's no need to send the entire
+      size_t packetSize = item.size + sizeof(Type) + sizeof(item.size);
       byte* data = new byte[packetSize];
       
       // Convert a Packet down to a char* buffer and 
       // Send to the client
       memcpy(data, &item, packetSize);
-
+      
       try {
         mSocket->send(data, packetSize);
-      } catch (exception& e) {
+      }
+      catch (exception& e) {
         mIsRunning.store(false);
         cout << "Error when attempting to send on socket. " << e.what() << endl;
       }
+
       delete[] data;
     }
   }
@@ -123,24 +123,9 @@ void ClientManager::recvTask() {
 
     if ((mIsRunning.load()) && (msgSize > 0) && (buffer != nullptr)) {
       Packet packet = extractPacket(buffer, msgSize);
-
-      //If the packet we've retrieved is a no-operation
-      //Then we have a correct packet, or received junk.
-      if (packet.type != Type::INVALID) {
-        // If we've received an acknowledge, then 
-        // Alert the send thread that we can continue.
-        if (packet.type == Type::ACKNOWLEDGE) {
-          mHasAcknowledged.store(true);
-          mAcknowledged.notify_all();
-        }
-        else {
-          // Otherwise just iterate through the handles
-          // That listen for this kind of packet.
-          for each (auto handler in mInputHandlers) {
-            if (handler->listensFor(packet.type)) {
-              handler->handlePacket(packet);
-            }
-          }
+      for each (auto handler in mInputHandlers) {
+        if (handler->listensFor(packet.type)) {
+          handler->handlePacket(packet);
         }
       }
     } else if (msgSize == 0) {

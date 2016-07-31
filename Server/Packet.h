@@ -5,14 +5,13 @@
 // To be able to handle a lot of them.
 enum Type {
   INVALID = 0,
-  ACKNOWLEDGE = 1 << 1,
-  TRACK = 1 << 2,
-  AUDIO = 1 << 3,
-  HEADER = 1 << 4,
-  FILELIST = 1 << 5,
-  FRIEND_REQ = 1 << 6,
-  USER_UPDATE = 1 << 7,
-  EXIT = 1 << 8,
+  TRACK = 1 << 1,
+  AUDIO = 1 << 2,
+  HEADER = 1 << 3,
+  FILELIST = 1 << 4,
+  FRIEND_REQ = 1 << 5,
+  USER_UPDATE = 1 << 6,
+  EXIT = 1 << 7,
   First = INVALID,
   Last = EXIT
 };
@@ -37,11 +36,11 @@ public:
   // Of the data stored in the packet.
   const int static maxPacketSize = 1024;
 
-  //Type of the Packet. 
-  Type type;
-
   // Size of the Data. 
   int size;
+
+  //Type of the Packet. 
+  Type type;
 
   //Byte Array, max length set to 1024.
   byte packetData[maxPacketSize];

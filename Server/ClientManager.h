@@ -70,12 +70,6 @@ private:
   // The mutex
   mutex mMutex;
 
-  // Have we acknowledged.
-  atomic_bool mHasAcknowledged;
-
-  //The Condition variable has events.
-  condition_variable mAcknowledged;
-
   //We are running.
   atomic_bool mIsRunning = false; 
 

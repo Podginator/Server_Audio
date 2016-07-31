@@ -100,18 +100,18 @@ size_t WavFilePackager::getNextChunk(byte* buffer, size_t bufferSize) {
   // Calculate the amount of buffer we need to use. 
   
   //seek from extracted location.
-  mOpenFile.seekg(mExtracted, std::ios::beg);
+
 
   //Check that we haven't failed (failbit)
-  if ((mOpenFile.rdstate() & std::ifstream::failbit) != 0) {
+  //if ((mOpenFile.rdstate() & std::ifstream::failbit) != 0) {
     //Then extract from the file the next chunk. 
     mOpenFile.read(reinterpret_cast<char*>(buffer), calculatedRead);
 
     //if (amtRead > 0) {
-      mExtracted += bufferSize;
-      res += bufferSize;
+      mExtracted += calculatedRead;
+      res += calculatedRead;
     //}
-  }
+  //}
 
   //Return the size of the buffer.
   return res;

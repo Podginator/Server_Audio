@@ -25,7 +25,7 @@ public:
   }
 
   //Return a vector of the Types. 
-  vector<pair<T, string>> get() {
+  vector<pair<T, string>> get() const {
     return mFileMap;
   }
 

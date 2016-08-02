@@ -24,7 +24,7 @@ ClientManager::ClientManager(unique_ptr<Socket> socket,
 // Start 
 //    Start the Client.
 void ClientManager::start() {
-  mIsRunning = true;
+  mIsRunning.store(true);
 
   receiveThread = thread(&ClientManager::recvTask, this);
   sendThread = thread(&ClientManager::sendTask, this);

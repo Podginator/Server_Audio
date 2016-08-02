@@ -48,4 +48,7 @@ private:
   // Requst a song, chop it up and send it to te mConQueue
   //   fileName : The Song File we want to dissect.
   void requestFile(Song songFile);
+
+
+  void requestFileList(const FileList<Song>& files);
 };

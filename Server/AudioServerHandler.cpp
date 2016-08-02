@@ -42,48 +42,7 @@ void AudioServerHandler::handlePacket(const Packet& sentMessage) {
   case Type::FILELIST:
 
     //Package off and send back.
-    thread([&] {
-      size_t songSize = sizeof(Song);
-
-      byte* byteArray = new byte[Packet::maxPacketSize];
-      byte* pointer = byteArray;
-      int used = 0;
-
-      for (auto file : fileList->get()) {
-        auto type = file.first;
-
-        if ((used + songSize) > Packet::maxPacketSize) {
-
-          if (auto queue = mConQueue.lock()) {
-            //Make the packet. 
-            Packet intermediatePacket(Type::FILELIST, used, byteArray);
-            //Delete the existing one.
-            delete[] byteArray;
-            queue->push(intermediatePacket);
-          }
-          else {
-            break;
-          }
-
-          //Clear buffer. 
-          byteArray = new byte[Packet::maxPacketSize];
-          pointer = byteArray;
-          used = 0;
-        }
-
-        memcpy(pointer, &type, songSize);
-        pointer += songSize;
-        used += songSize;
-      }
-
-      if (auto queue = mConQueue.lock()) {
-        Packet finalPacket(Type::FILELIST, used, byteArray);
-        queue->push(finalPacket);
-      }
-
-      //Clear buffer. 
-      delete[] byteArray;
-    }).detach();
+    thread([&] { requestFileList(*fileList); }).detach();
 
 
     break;
@@ -157,4 +116,48 @@ void AudioServerHandler::requestFile(Song song){
 
   //Notify all waiting threads. 
   mIsOnly.notify_all();
+}
+
+
+void AudioServerHandler::requestFileList(const FileList<Song>& files) {
+  size_t songSize = sizeof(Song);
+
+  byte* byteArray = new byte[Packet::maxPacketSize];
+  byte* pointer = byteArray;
+  int used = 0;
+
+  for (auto file : files.get()) {
+    auto type = file.first;
+
+    if ((used + songSize) > Packet::maxPacketSize) {
+
+      if (auto queue = mConQueue.lock()) {
+        //Make the packet. 
+        Packet intermediatePacket(Type::FILELIST, used, byteArray);
+        //Delete the existing one.
+        delete[] byteArray;
+        queue->push(intermediatePacket);
+      }
+      else {
+        break;
+      }
+
+      //Clear buffer. 
+      byteArray = new byte[Packet::maxPacketSize];
+      pointer = byteArray;
+      used = 0;
+    }
+
+    memcpy(pointer, &type, songSize);
+    pointer += songSize;
+    used += songSize;
+  }
+
+  if (auto queue = mConQueue.lock()) {
+    Packet finalPacket(Type::FILELIST, used, byteArray);
+    queue->push(finalPacket);
+  }
+
+  //Clear buffer. 
+  delete[] byteArray;
 }
